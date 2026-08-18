@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "a1ab7b889c5652b1a725",
+  "position": {
+    "x": 20,
+    "y": 16,
+    "z": 0,
+    "width": 1240,
+    "height": 62,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "UGANDA BANKING SECTOR\n",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "9pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Policy rate cuts only partly reach borrowers: lending still sits 7.2pp above the CBR.  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "15pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "Bank of Uganda monthly statistics, Jan 2005 to Jul 2026. CBR series begins Jul 2011.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#5A6B75",
+                      "fontStyle": "italic"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. UGANDA BANKING SECTOR\nPolicy rate cuts only partly reach borrowers: lending still sits 7.2pp above the CBR.  Bank of Uganda monthly statistics, Jan 2005 to Jul 2026. CBR series begins Jul 2011.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

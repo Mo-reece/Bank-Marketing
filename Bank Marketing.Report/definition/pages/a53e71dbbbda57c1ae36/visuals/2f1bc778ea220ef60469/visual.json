@@ -1,0 +1,107 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "2f1bc778ea220ef60469",
+  "position": {
+    "x": 8,
+    "y": 344,
+    "z": 29,
+    "height": 136,
+    "width": 208,
+    "tabOrder": 29
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "ABOUT THIS DATA",
+                    "textStyle": {
+                      "fontSize": "7.5pt",
+                      "color": "#C7D3DB",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "UCI Bank Marketing, Portugal. The source file carries no year; months were rebuilt from row order and the price index.",
+                    "textStyle": {
+                      "fontSize": "7.5pt",
+                      "color": "#C7D3DB"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#0B2138'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'About this data: UCI Bank Marketing, Portugal. The source file carries no year, so campaign months were reconstructed from row order and the consumer price index.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "56cede20d0d15f8baa4e",
+  "position": {
+    "x": 20,
+    "y": 554,
+    "z": 0,
+    "width": 1240,
+    "height": 86,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Main finding  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "Conversion falls monotonically with contact intensity: 13.0% on the first contact of a campaign, 9.4% by the fourth, 3.1% past the eleventh. Repeated calling does not wear prospects down, it burns them. Combined with the channel gap - 14.7% on mobile against 5.2% on landline - the operational read is to call each prospect on a mobile once, and spend the saved calls on new names.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#33454F"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. Main finding  Conversion falls monotonically with contact intensity: 13.0% on the first contact of a campaign, 9.4% by the fourth, 3.1% past the eleventh. Repeated calling does not wear prospects down, it burns them. Combined with the channel gap - 14.7% on mobile against 5.2% on landline - the operational read is to call each prospect on a mobile once, and spend the saved calls on new names.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

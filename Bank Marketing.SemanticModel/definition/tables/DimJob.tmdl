@@ -1,0 +1,40 @@
+/// Client occupation. 12 members, sourced from the campaign fact.
+table DimJob
+	lineageTag: cac067b0-dda6-5956-8002-695c7ee0e52a
+
+	/// Client occupation.
+	column Job
+		dataType: string
+		isKey
+		lineageTag: 5dea97cd-0b50-5e8d-bb44-8c9499aa6c44
+		summarizeBy: none
+		sourceColumn: Job
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Occupation rolled up to Working / Retired / Student / Not Working / Unknown. Retired and Student are the two highest-converting groups.
+	column 'Job Group'
+		dataType: string
+		lineageTag: 3f803280-0c33-5d39-b052-3942fc8c74ad
+		summarizeBy: none
+		sourceColumn: Job Group
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimJob = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct ( Table.SelectColumns ( FactCampaignContact, { "Job" } ) ),
+				    Group = Table.AddColumn ( Source, "Job Group", each
+				        if [Job] = "Retired" then "Retired"
+				        else if [Job] = "Student" then "Student"
+				        else if [Job] = "Unemployed" then "Not Working"
+				        else if [Job] = "Unknown" then "Unknown"
+				        else "Working", type text ),
+				    Sorted = Table.Sort ( Group, { { "Job", Order.Ascending } } )
+				in
+				    Sorted
+
+	annotation PBI_ResultType = Table
+

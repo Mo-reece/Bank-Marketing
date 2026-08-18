@@ -1,0 +1,112 @@
+/// Folder holding the source data. Every query builds its path from this, so the
+/// project moves between machines by changing this one value.
+expression DataFolder = "C:\Users\Moreece\Documents\bank-marketing-powerbi" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 6e76070f-6dba-5650-bdec-1ad6b10cac13
+	queryGroup: '01 Parameters'
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text
+
+/// Raw UCI campaign file, typed and stamped with its source row order. Staging only - not loaded.
+expression CampaignContactsRaw =
+		let
+		    // UCI Bank Marketing: 41,188 telemarketing contacts, May 2008 - Nov 2010.
+		    // Source file is SEMICOLON-delimited and quotes every text value.
+		    Source = Csv.Document(
+		        File.Contents ( DataFolder & "\data\bank-additional-full.csv" ),
+		        [ Delimiter = ";", Columns = 21, Encoding = 65001, QuoteStyle = QuoteStyle.Csv ]
+		    ),
+		    Promoted = Table.PromoteHeaders ( Source, [ PromoteAllScalars = true ] ),
+		    Typed = Table.TransformColumnTypes (
+		        Promoted,
+		        {
+		            { "age", Int64.Type }, { "job", type text }, { "marital", type text },
+		            { "education", type text }, { "default", type text }, { "housing", type text },
+		            { "loan", type text }, { "contact", type text }, { "month", type text },
+		            { "day_of_week", type text }, { "duration", Int64.Type }, { "campaign", Int64.Type },
+		            { "pdays", Int64.Type }, { "previous", Int64.Type }, { "poutcome", type text },
+		            { "emp.var.rate", type number }, { "cons.price.idx", type number },
+		            { "cons.conf.idx", type number }, { "euribor3m", type number },
+		            { "nr.employed", type number }, { "y", type text }
+		        }
+		    ),
+		    // The UCI file is documented as ordered by contact date. That order is the only
+		    // evidence of WHICH YEAR a row belongs to, so it is captured before anything re-sorts.
+		    Indexed = Table.AddIndexColumn ( Typed, "SourceRowOrder", 0, 1, Int64.Type )
+		in
+		    Indexed
+	lineageTag: e51f8c22-365b-557d-b9f9-98b6b089074d
+	queryGroup: '02 Staging'
+
+	annotation PBI_ResultType = Table
+
+/// The 26 campaign months, with the calendar year the source file omits. Staging only - not loaded.
+expression CampaignPeriods =
+		let
+		    // The source has `month` (may, jun, ...) but NO year and NO day of month.
+		    // Rows are ordered by date (UCI docs), covering May 2008 - Nov 2010.
+		    //
+		    // cons.price.idx is a monthly national index, and across this file it is a
+		    // 1:1 natural key for the campaign month: 26 distinct values, none shared by
+		    // two months, none of the 26 months carrying two values. So grouping on
+		    // [month, cons.price.idx] recovers exactly the 26 campaign periods, and the
+		    // year is then assigned by walking them in source order: the month number
+		    // rises within a year and drops when a new year starts.
+		    MonthNumbers = [ jan = 1, feb = 2, mar = 3, apr = 4, may = 5, jun = 6,
+		                     jul = 7, aug = 8, sep = 9, oct = 10, nov = 11, dec = 12 ],
+		    Grouped = Table.Group (
+		        CampaignContactsRaw,
+		        { "month", "cons.price.idx" },
+		        { { "FirstRow", each List.Min ( [SourceRowOrder] ), Int64.Type } }
+		    ),
+		    WithMonthNo = Table.AddColumn ( Grouped, "MonthNumber", each Record.Field ( MonthNumbers, [month] ), Int64.Type ),
+		    Sorted = Table.Sort ( WithMonthNo, { { "FirstRow", Order.Ascending } } ),
+		    Walked = List.Skip (
+		        List.Accumulate (
+		            Table.ToRecords ( Sorted ),
+		            { [ Year = 2008, MonthNumber = 0, month = "", cpi = 0.0 ] },
+		            ( state, r ) =>
+		                let
+		                    prev = List.Last ( state ),
+		                    yr = if r[MonthNumber] <= prev[MonthNumber] then prev[Year] + 1 else prev[Year]
+		                in
+		                    state & { [ Year = yr, MonthNumber = r[MonthNumber], month = r[month], cpi = r[#"cons.price.idx"] ] }
+		        ),
+		        1
+		    ),
+		    AsTable = Table.FromRecords ( Walked, type table [ Year = Int64.Type, MonthNumber = Int64.Type, month = text, cpi = number ] ),
+		    WithStart = Table.AddColumn ( AsTable, "CampaignMonthStart", each #date ( [Year], [MonthNumber], 1 ), type date ),
+		    Renamed = Table.RenameColumns ( WithStart, { { "cpi", "cons.price.idx" } } )
+		in
+		    Renamed
+	lineageTag: e9ce69fa-1012-5bf1-b443-f5758ca0b847
+	queryGroup: '02 Staging'
+
+	annotation PBI_ResultType = Table
+
+/// Bank of Uganda monthly indicators in long format. Staging only - not loaded.
+expression UgandaIndicatorsRaw =
+		let
+		    // Bank of Uganda monthly statistics, long format: Date | Indicator | Category | Unit | Value.
+		    // Pulled from the BOU open data portal (cb-uganda.opendataforafrica.org),
+		    // datasets kwhzbwc (Interest Rates) and mlhqkfg (Exchange Rates).
+		    Source = Csv.Document (
+		        File.Contents ( DataFolder & "\data\BOU_Uganda_Monthly.csv" ),
+		        [ Delimiter = ",", Columns = 5, Encoding = 65001, QuoteStyle = QuoteStyle.Csv ]
+		    ),
+		    Promoted = Table.PromoteHeaders ( Source, [ PromoteAllScalars = true ] ),
+		    Typed = Table.TransformColumnTypes (
+		        Promoted,
+		        {
+		            { "Date", type date }, { "Indicator", type text },
+		            { "Category", type text }, { "Unit", type text }, { "Value", type number }
+		        }
+		    )
+		in
+		    Typed
+	lineageTag: 77860a3e-a249-5f93-971a-a742c212f4a7
+	queryGroup: '02 Staging'
+
+	annotation PBI_ResultType = Table
+

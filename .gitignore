@@ -1,0 +1,12 @@
+# Power BI local caches and machine-specific state
+**/.pbi/cache.abf
+**/.pbi/localSettings.json
+**/.pbi/editorSettings.json
+**/*.pbix
+
+# OS / editor junk
+Thumbs.db
+desktop.ini
+**/.DS_Store
+**/__MACOSX/
+**/.Rhistory

@@ -1,0 +1,48 @@
+/// Grain: one row per indicator per month. Bank of Uganda monthly statistics, Jan 2005 - Jul 2026. Unrelated to the Portuguese campaign data - it is a separate subject area on its own timeline.
+table FactUgandaIndicator
+	lineageTag: 818c1b25-3b7e-5775-aa46-5494292f3850
+
+	/// First day of the observation month. Key to DimUgandaMonth.
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 4968e73f-5510-5a4a-a7e0-5bdc69614d96
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Indicator name. Key to DimIndicator.
+	column Indicator
+		dataType: string
+		isHidden
+		lineageTag: 0d8ea7ff-7f6e-5eb9-8288-2c015c3f96a1
+		summarizeBy: none
+		sourceColumn: Indicator
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Observed value, in the unit given by DimIndicator[Unit].
+	column Value
+		dataType: double
+		formatString: #,0.00
+		lineageTag: aa69f22c-ee25-5fe8-98a7-820d9078f41f
+		summarizeBy: sum
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactUgandaIndicator = m
+		mode: import
+		source =
+				let
+				    Source = UgandaIndicatorsRaw,
+				    Keep = Table.SelectColumns ( Source, { "Date", "Indicator", "Value" } )
+				in
+				    Keep
+
+	annotation PBI_ResultType = Table
+

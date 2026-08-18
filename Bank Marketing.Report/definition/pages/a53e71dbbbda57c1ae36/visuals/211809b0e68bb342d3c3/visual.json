@@ -1,0 +1,133 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "211809b0e68bb342d3c3",
+  "position": {
+    "x": 240,
+    "y": 658,
+    "z": 12,
+    "height": 42,
+    "width": 1024,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Volume collapsed \u2014 ",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#0F2A3F",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "27,690 calls in 2008 became 2,058 in 2010.     ",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Conversion climbed \u2014 ",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#0F2A3F",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "4.8% to 52.1%, a 10.8x lift.     ",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Deposits held \u2014 ",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#0F2A3F",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "93% fewer calls cost only 20% of the deposits.",
+                    "textStyle": {
+                      "fontSize": "8.5pt",
+                      "color": "#5A6B75"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Summary: volume collapsed from 27,690 calls to 2,058; conversion climbed from 4.8 to 52.1 percent, a 10.8 times lift; and deposits held, 93 percent fewer calls costing only 20 percent of the deposits.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

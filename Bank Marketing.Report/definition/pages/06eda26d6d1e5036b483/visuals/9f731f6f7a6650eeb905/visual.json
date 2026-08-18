@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "9f731f6f7a6650eeb905",
+  "position": {
+    "x": 20,
+    "y": 14,
+    "z": 0,
+    "width": 1240,
+    "height": 58,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "SEGMENT DETAIL\n",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "9pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Drill-through from Customer Segments - every figure below is filtered to the segment named next. 'vs campaign average' is in percentage points against the 11.27% baseline. Check the contact count before acting on a rate: the smaller groups move a long way on a handful of subscriptions.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#33454F"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. SEGMENT DETAIL\nDrill-through from Customer Segments - every figure below is filtered to the segment named next. vs campaign average is in percentage points against the 11.27% baseline. Check the contact count before acting on a rate: the smaller groups move a long way on a handful of subscriptions.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

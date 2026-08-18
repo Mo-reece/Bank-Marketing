@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "b5fa9c36459f5ef6b0f6",
+  "position": {
+    "x": 20,
+    "y": 16,
+    "z": 0,
+    "width": 1240,
+    "height": 62,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "CUSTOMER SEGMENTS\n",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "9pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Conversion is U-shaped by age: strongest at both ends of life, weakest in mid-career.  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "15pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "Right-click any bar and drill through to Segment Detail. Loan and credit status carry almost no signal.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#5A6B75",
+                      "fontStyle": "italic"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. CUSTOMER SEGMENTS\nConversion is U-shaped by age: strongest at both ends of life, weakest in mid-career.  Right-click any bar and drill through to Segment Detail. Loan and credit status carry almost no signal.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

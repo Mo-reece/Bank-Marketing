@@ -1,0 +1,103 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "fddffe9b44d85efda11e",
+  "position": {
+    "x": 20,
+    "y": 550,
+    "z": 0,
+    "width": 1240,
+    "height": 90,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "What this says  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "Retirees convert at 25.2% and students at 31.4%, against 6.9% for blue-collar workers. By age the pattern is a U: 47.2% at 65+, 24.0% under 25, but only 8.7% through the 35-54 stretch. Yet admin staff still supplied the most subscriptions in absolute terms - the biggest segment at a middling 13.0% rate. Rate tells you who to call; the bubble chart tells you who actually pays the bills.",
+                    "textStyle": {
+                      "fontSize": "10pt",
+                      "color": "#33454F"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. What this says  Retirees convert at 25.2% and students at 31.4%, against 6.9% for blue-collar workers. By age the pattern is a U: 47.2% at 65+, 24.0% under 25, but only 8.7% through the 35-54 stretch. Yet admin staff still supplied the most subscriptions in absolute terms - the biggest segment at a middling 13.0% rate. Rate tells you who to call; the bubble chart tells you who actually pays the bills.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

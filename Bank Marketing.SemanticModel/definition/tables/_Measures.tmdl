@@ -1,0 +1,654 @@
+/// Home for every explicit measure in the model. Holds no data.
+table _Measures
+	lineageTag: 5f66b599-af82-5328-b0f9-1b721990bd5a
+
+	/// Clients contacted in the campaign. One row per client, so this counts clients reached, not calls placed.
+	measure 'Total Contacts' = COUNTROWS ( FactCampaignContact )
+		formatString: #,0
+		displayFolder: 01 Campaign Volume
+		lineageTag: 5a265dc7-3392-5bf8-9877-72611f57c436
+
+	/// Clients who subscribed to the term deposit.
+	measure Subscriptions = SUM ( FactCampaignContact[Subscribed Flag] )
+		formatString: #,0
+		displayFolder: 01 Campaign Volume
+		lineageTag: 02f93bf2-89da-5e6c-85f7-404b8ffb30aa
+
+	/// Share of contacted clients who subscribed. Campaign-wide this is 11.27%.
+	measure 'Conversion Rate %' = DIVIDE ( [Subscriptions], [Total Contacts] )
+		formatString: 0.00%
+		displayFolder: 02 Conversion
+		lineageTag: ca74644d-e654-5023-8aed-35c50a366b12
+
+	/// How many clients must be contacted to win one subscription. Lower is better; campaign-wide it is 8.9.
+	measure 'Contacts per Conversion' = DIVIDE ( [Total Contacts], [Subscriptions] )
+		formatString: #,0.0
+		displayFolder: 02 Conversion
+		lineageTag: e12821b0-99fb-59ad-90be-bef45b61f4c7
+
+	/// Mean length of the last call, in seconds. Only known after the call ends, so it explains outcomes rather than predicting them.
+	measure 'Avg Call Duration' = AVERAGE ( FactCampaignContact[Call Duration (Seconds)] )
+		formatString: #,0 "s"
+		displayFolder: 03 Call Quality
+		lineageTag: 06ea3b84-f8c7-5946-9bd0-76e919c3386b
+
+	/// Mean call length formatted as minutes and seconds, for KPI cards and tables. Blank when no calls fall in context, so empty months drop out of a table rather than showing as ':'.
+	measure 'Avg Call Duration (mm:ss)' =
+			// Must return BLANK when there are no calls. Returning ":" for an empty month
+			// is a non-blank string, which kept months with no campaign activity (Jan-Apr
+			// 2008) visible as empty rows in the month-by-month table.
+			VAR Secs = ROUND ( [Avg Call Duration], 0 )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( Secs ),
+			        FORMAT ( INT ( DIVIDE ( Secs, 60 ) ), "0" ) & ":" & FORMAT ( MOD ( Secs, 60 ), "00" )
+			    )
+		displayFolder: 03 Call Quality
+		lineageTag: 6b4bd688-ea8d-58f7-a20c-e37cf3ed01a8
+
+	/// Conversion rate for a single previous-campaign outcome. Deliberately blank when more than one outcome is in context, so a total row can never be mistaken for a per-outcome rate. Use it broken down by Previous Outcome.
+	measure 'Conversion Rate by Previous Outcome' =
+			VAR OutcomesInContext =
+			    DISTINCTCOUNT ( FactCampaignContact[Previous Outcome] )
+			RETURN
+			    IF ( OutcomesInContext = 1, [Conversion Rate %] )
+		formatString: 0.00%
+		displayFolder: 02 Conversion
+		lineageTag: a7bb0e8b-cfc8-56c9-b807-26c2a0c4c43f
+
+	/// Conversion rate among clients who already subscribed in a previous campaign. 65.11% campaign-wide - by far the strongest signal in the data.
+	measure 'Conversion Rate % (Prior Success)' =
+			CALCULATE (
+			    [Conversion Rate %],
+			    FactCampaignContact[Previous Outcome] = "Success"
+			)
+		formatString: 0.00%
+		displayFolder: 02 Conversion
+		lineageTag: 787489e5-b64f-59b2-8b9d-610d6157961f
+
+	/// How many times better prior-success clients convert than the campaign average. Around 5.8x.
+	measure 'Prior Success Lift' =
+			VAR PriorSuccess =
+			    CALCULATE (
+			        [Conversion Rate %],
+			        REMOVEFILTERS ( FactCampaignContact[Previous Outcome] ),
+			        FactCampaignContact[Previous Outcome] = "Success"
+			    )
+			VAR Overall =
+			    CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( FactCampaignContact[Previous Outcome] ) )
+			RETURN
+			    DIVIDE ( PriorSuccess, Overall )
+		formatString: 0.0"x"
+		displayFolder: 02 Conversion
+		lineageTag: 81b70579-714b-5924-8c68-0accdbbd9565
+
+	/// Gap between this segment's conversion rate and the campaign average, in percentage points. Positive means the segment beats the average.
+	measure 'Conversion vs Campaign Average (pp)' =
+			VAR Overall =
+			    CALCULATE (
+			        [Conversion Rate %],
+			        REMOVEFILTERS ( DimJob ),
+			        REMOVEFILTERS ( DimEducation ),
+			        REMOVEFILTERS ( DimAgeBand ),
+			        REMOVEFILTERS ( FactCampaignContact )
+			    )
+			RETURN
+			    IF ( NOT ISBLANK ( [Conversion Rate %] ), [Conversion Rate %] - Overall )
+		formatString: +0.00%;-0.00%;0.00%
+		displayFolder: 04 Segment Analysis
+		lineageTag: 57bbc656-8f70-50b9-bbf8-1f819b0b7da5
+
+	/// This segment's share of all subscriptions won. Shows where the volume actually came from, which is not always where the rate is highest.
+	measure 'Segment Share of Subscriptions' =
+			DIVIDE (
+			    [Subscriptions],
+			    CALCULATE (
+			        [Subscriptions],
+			        REMOVEFILTERS ( DimJob ),
+			        REMOVEFILTERS ( DimEducation ),
+			        REMOVEFILTERS ( DimAgeBand ),
+			        REMOVEFILTERS ( FactCampaignContact )
+			    )
+			)
+		formatString: 0.0%
+		displayFolder: 04 Segment Analysis
+		lineageTag: 56de9768-0512-564d-a55d-4e6caf7f7201
+
+	/// Average observed value of the selected Bank of Uganda series over the months in context. Base measure for the named rates below.
+	measure 'Indicator Value' = AVERAGE ( FactUgandaIndicator[Value] )
+		formatString: #,0.00
+		displayFolder: 05 Uganda Banking
+		lineageTag: 6ce2d6c6-9941-55d7-ae03-8bf7ab308e08
+
+	/// Bank of Uganda policy rate, monthly. The series starts in July 2011, when Uganda adopted the CBR under inflation targeting - earlier months are genuinely absent, not missing.
+	measure 'Central Bank Rate' =
+			CALCULATE (
+			    [Indicator Value],
+			    REMOVEFILTERS ( DimIndicator ),
+			    DimIndicator[Indicator] = "Central Bank Rate"
+			)
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 3e936d44-8be0-5265-9f82-0063cf4fa0c6
+
+	/// Weighted-average shilling lending rate charged by Ugandan commercial banks.
+	measure 'Lending Rate' =
+			CALCULATE (
+			    [Indicator Value],
+			    REMOVEFILTERS ( DimIndicator ),
+			    DimIndicator[Indicator] = "Commercial Bank Lending Rate (Shillings)"
+			)
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 2bb69e23-7a2c-50f4-8c71-d1a04697de39
+
+	/// Weighted-average shilling deposit rate (7-12 month time deposits) paid by Ugandan commercial banks.
+	measure 'Deposit Rate' =
+			CALCULATE (
+			    [Indicator Value],
+			    REMOVEFILTERS ( DimIndicator ),
+			    DimIndicator[Indicator] = "Commercial Bank Deposit Rate (Shillings)"
+			)
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: d214a175-272e-5adf-9ba9-ea75783be400
+
+	/// Overall interbank lending rate between Ugandan commercial banks.
+	measure 'Interbank Rate' =
+			CALCULATE (
+			    [Indicator Value],
+			    REMOVEFILTERS ( DimIndicator ),
+			    DimIndicator[Indicator] = "Interbank Rate (Overall)"
+			)
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 1e69a71f-a6a6-57b5-82f0-20706182cdf8
+
+	/// Market exchange rate, shillings per US dollar, at month end. A rising line means the shilling is weakening.
+	measure 'UGX per USD' =
+			CALCULATE (
+			    [Indicator Value],
+			    REMOVEFILTERS ( DimIndicator ),
+			    DimIndicator[Indicator] = "UGX per USD (Period End)"
+			)
+		formatString: #,0
+		displayFolder: 05 Uganda Banking
+		lineageTag: 01ed0abb-5bcc-5764-8eb3-28807998977b
+
+	/// Gap between the commercial lending rate and the policy rate, in percentage points, averaged over the months in context. Blank before July 2011, when there was no CBR to compare against, and blank in the newest month, because the lending rate publishes one month behind the CBR. A persistent wide gap means policy cuts are not reaching borrowers.
+	measure 'Lending Spread over CBR' =
+			// Averaged per month, not as a difference of two averages: the lending series
+			// starts in 2005 and the CBR only in 2011, so subtracting the two totals would
+			// compare different periods. Blank months drop out of the average.
+			AVERAGEX (
+			    VALUES ( DimUgandaMonth[Date] ),
+			    VAR PolicyRate = [Central Bank Rate]
+			    VAR CommercialRate = [Lending Rate]
+			    RETURN
+			        IF (
+			            NOT ISBLANK ( PolicyRate ) && NOT ISBLANK ( CommercialRate ),
+			            CommercialRate - PolicyRate
+			        )
+			)
+		formatString: 0.00"pp"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 131510a8-4a39-5a69-8c7c-6c3d96df1746
+
+	/// Gap between what banks charge borrowers and what they pay depositors, in percentage points. A standard read on banking-sector margin and competition.
+	measure 'Lending-Deposit Spread' =
+			IF (
+			    NOT ISBLANK ( [Lending Rate] ) && NOT ISBLANK ( [Deposit Rate] ),
+			    [Lending Rate] - [Deposit Rate]
+			)
+		formatString: 0.00"pp"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 7ddff55c-5d53-591f-b63f-4c98d5d47669
+
+	/// Policy rate in the most recent month that has an observation, within whatever period is filtered.
+	measure 'Central Bank Rate (Latest)' =
+			VAR LastObserved =
+			    CALCULATE (
+			        MAX ( FactUgandaIndicator[Date] ),
+			        REMOVEFILTERS ( DimIndicator ),
+			        DimIndicator[Indicator] = "Central Bank Rate"
+			    )
+			RETURN
+			    CALCULATE (
+			        [Central Bank Rate],
+			        REMOVEFILTERS ( DimUgandaMonth ),
+			        DimUgandaMonth[Date] = LastObserved
+			    )
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 7cf37844-3d14-57ea-9947-3e0e60a977e7
+
+	/// Commercial lending rate in the most recent month that has an observation. This series runs one month behind the policy rate.
+	measure 'Lending Rate (Latest)' =
+			VAR LastObserved =
+			    CALCULATE (
+			        MAX ( FactUgandaIndicator[Date] ),
+			        REMOVEFILTERS ( DimIndicator ),
+			        DimIndicator[Indicator] = "Commercial Bank Lending Rate (Shillings)"
+			    )
+			RETURN
+			    CALCULATE (
+			        [Lending Rate],
+			        REMOVEFILTERS ( DimUgandaMonth ),
+			        DimUgandaMonth[Date] = LastObserved
+			    )
+		formatString: 0.00"%"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 5b157b67-1958-5d03-a95b-7293f8219b60
+
+	/// Month-end shilling rate against the US dollar in the most recent month with an observation.
+	measure 'UGX per USD (Latest)' =
+			VAR LastObserved =
+			    CALCULATE (
+			        MAX ( FactUgandaIndicator[Date] ),
+			        REMOVEFILTERS ( DimIndicator ),
+			        DimIndicator[Indicator] = "UGX per USD (Period End)"
+			    )
+			RETURN
+			    CALCULATE (
+			        [UGX per USD],
+			        REMOVEFILTERS ( DimUgandaMonth ),
+			        DimUgandaMonth[Date] = LastObserved
+			    )
+		formatString: #,0
+		displayFolder: 05 Uganda Banking
+		lineageTag: 8097401a-4091-585e-9d00-3da1aa84b1e7
+
+	/// Gap between the lending rate and the policy rate in the most recent month where both are published.
+	measure 'Lending Spread over CBR (Latest)' =
+			VAR LastObserved =
+			    CALCULATE (
+			        MAX ( FactUgandaIndicator[Date] ),
+			        REMOVEFILTERS ( DimIndicator ),
+			        DimIndicator[Indicator] = "Commercial Bank Lending Rate (Shillings)"
+			    )
+			RETURN
+			    CALCULATE (
+			        [Lending Spread over CBR],
+			        REMOVEFILTERS ( DimUgandaMonth ),
+			        DimUgandaMonth[Date] = LastObserved
+			    )
+		formatString: 0.00"pp"
+		displayFolder: 05 Uganda Banking
+		lineageTag: 794882f1-c2f2-5e3e-ad37-0aed31204f04
+
+	/// Text label describing the current Job, Education and Age Band selection. Used as the drill-through page header so the reader always knows what they drilled into.
+	measure 'Selected Segment' =
+			VAR J = SELECTEDVALUE ( DimJob[Job], "All jobs" )
+			VAR E = SELECTEDVALUE ( DimEducation[Education], "all education levels" )
+			VAR A = SELECTEDVALUE ( DimAgeBand[Age Band], "all ages" )
+			RETURN
+			    J & " / " & E & " / " & A
+		displayFolder: 06 Report Support
+		lineageTag: af989e0f-08f5-5833-acf5-47a70de086ef
+
+	/// States the campaign window currently in view, so a filtered page never reads as if it covered the whole campaign. Blank when no campaign month is in context.
+	measure 'Data Coverage Note' =
+			// 'Year Month Label' is text, so MIN/MAX on it sorts alphabetically
+			// (Apr before May, Sep after Nov). Rank on the numeric sort column instead.
+			VAR MonthsInView =
+			    CALCULATETABLE (
+			        SUMMARIZE ( DimDate, DimDate[Year Month Sort], DimDate[Year Month Label] ),
+			        FactCampaignContact
+			    )
+			VAR FirstMonth =
+			    MAXX ( TOPN ( 1, MonthsInView, [Year Month Sort], ASC ), [Year Month Label] )
+			VAR LastMonth =
+			    MAXX ( TOPN ( 1, MonthsInView, [Year Month Sort], DESC ), [Year Month Label] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( FirstMonth ),
+			        "Campaign months in view: " & FirstMonth & " to " & LastMonth
+			    )
+		displayFolder: 06 Report Support
+		lineageTag: 3a181f6b-5fb1-5569-a0f8-c4db24e5a179
+
+	/// Clients remaining after each cumulative targeting rule. Blank unless a single funnel stage is in context, so a total row can never be mistaken for a stage.
+	measure 'Funnel Contacts' =
+			// Cumulative targeting rules. Each stage is a strict subset of the one above,
+			// so the bars can honestly be read as a funnel.
+			VAR Stage = SELECTEDVALUE ( DimFunnelStage[Stage Order] )
+			RETURN
+			    SWITCH (
+			        Stage,
+			        1, [Total Contacts],
+			        2, CALCULATE ( [Total Contacts], FactCampaignContact[Contact Channel] = "Cellular" ),
+			        3, CALCULATE ( [Total Contacts], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3 ),
+			        4, CALCULATE ( [Total Contacts], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3, FactCampaignContact[Previous Outcome] <> "Failure" ),
+			        5, CALCULATE ( [Total Contacts], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3, FactCampaignContact[Previous Outcome] = "Success" )
+			    )
+		formatString: #,0
+		displayFolder: 07 Targeting Funnel
+		lineageTag: 3b725a55-3597-4653-a58e-d80a7ca876b1
+
+	/// Conversion rate of the clients remaining at each funnel stage. Rises from 11.27% for the whole campaign to 66.89% for prior subscribers reached quickly on mobile.
+	measure 'Funnel Conversion Rate %' =
+			VAR Stage = SELECTEDVALUE ( DimFunnelStage[Stage Order] )
+			RETURN
+			    SWITCH (
+			        Stage,
+			        1, [Conversion Rate %],
+			        2, CALCULATE ( [Conversion Rate %], FactCampaignContact[Contact Channel] = "Cellular" ),
+			        3, CALCULATE ( [Conversion Rate %], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3 ),
+			        4, CALCULATE ( [Conversion Rate %], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3, FactCampaignContact[Previous Outcome] <> "Failure" ),
+			        5, CALCULATE ( [Conversion Rate %], FactCampaignContact[Contact Channel] = "Cellular", FactCampaignContact[Contacts This Campaign] <= 3, FactCampaignContact[Previous Outcome] = "Success" )
+			    )
+		formatString: 0.0%
+		displayFolder: 07 Targeting Funnel
+		lineageTag: 29b55e71-3160-49f6-b263-385ef6e5b675
+
+	/// Clients contacted in the last campaign year in view (2010 unfiltered). Reference figure for the headline contact count, showing where the campaign ended up rather than its total.
+	measure 'Contacts (Final Year)' =
+			// Final year that actually has campaign contacts, within whatever is filtered.
+			VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			RETURN
+			    CALCULATE ( [Total Contacts], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+		formatString: #,0
+		displayFolder: 08 Executive Context
+		lineageTag: b0279730-d505-430a-9390-ddbd0eea9875
+
+	/// Term deposits opened in the last campaign year in view (2010 unfiltered).
+	measure 'Subscriptions (Final Year)' =
+			VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			RETURN
+			    CALCULATE ( [Subscriptions], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+		formatString: #,0
+		displayFolder: 08 Executive Context
+		lineageTag: 8fb2d64d-d960-4056-bca1-2a833f48f627
+
+	/// Conversion rate in the last campaign year in view (52.1% in 2010, against 11.27% for the campaign as a whole).
+	measure 'Conversion Rate % (Final Year)' =
+			VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			RETURN
+			    CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+		formatString: 0.0%
+		displayFolder: 08 Executive Context
+		lineageTag: 26c6c5f8-3db4-4202-92a6-52ecec02b8e3
+
+	/// Calls needed per deposit won in the last campaign year in view. Lower is better.
+	measure 'Contacts per Conversion (Final Year)' =
+			VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			RETURN
+			    CALCULATE ( [Contacts per Conversion], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+		formatString: #,0.0
+		displayFolder: 08 Executive Context
+		lineageTag: 7a478465-35c4-4f59-b7d7-928232e4ecbc
+
+	/// Change in contact volume from the first campaign year to the last (-92.6%: 27,690 in 2008 down to 2,058 in 2010). Pinned against cross-filtering.
+	measure 'Contacts Change vs First Year %' =
+			// Pinned: the first-to-last-year comparison only means anything campaign-wide,
+			// and it collapsed to blank whenever a reader clicked a single year.
+			CALCULATE (
+			    VAR FirstYear = CALCULATE ( MIN ( DimDate[Year] ), FactCampaignContact )
+			    VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			    VAR First = CALCULATE ( [Total Contacts], REMOVEFILTERS ( DimDate ), DimDate[Year] = FirstYear )
+			    VAR Final = CALCULATE ( [Total Contacts], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+			    RETURN
+			        IF ( FirstYear <> FinalYear, DIVIDE ( Final - First, First ) ),
+			    REMOVEFILTERS ()
+			)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 10 Headline (pinned)
+		lineageTag: 59a03d11-01b2-4ecc-b7d8-86aa600e87da
+
+	/// Change in conversion rate from the first campaign year to the last, in percentage points (+47.3pp: 4.8% in 2008 up to 52.1% in 2010). Blank when only one campaign year is in view.
+	measure 'Conversion Change vs First Year (pp)' =
+			VAR FirstYear = CALCULATE ( MIN ( DimDate[Year] ), FactCampaignContact )
+			VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			VAR First = CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( DimDate ), DimDate[Year] = FirstYear )
+			VAR Final = CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+			RETURN
+			    IF ( FirstYear <> FinalYear, Final - First )
+		formatString: +0.0"pp";-0.0"pp";0.0"pp"
+		displayFolder: 08 Executive Context
+		lineageTag: c41c648d-e536-4941-b668-a65dbb2ceabe
+
+	/// Sparkline of contact volume by campaign month, rendered as an inline SVG for the card visual image slot. Blank if fewer than two months are in context.
+	measure 'Sparkline Contacts' =
+			// Inline SVG trend line for the card visual's image slot, over the campaign
+			// months in context. Normalised to its own min/max, so it shows shape, not scale.
+			VAR Src = CALCULATETABLE ( VALUES ( DimDate[Year Month Sort] ), FactCampaignContact )
+			VAR Pts = FILTER ( ADDCOLUMNS ( Src, "@Val", CALCULATE ( [Total Contacts] ) ), NOT ISBLANK ( [@Val] ) )
+			VAR N = COUNTROWS ( Pts )
+			VAR MinV = MINX ( Pts, [@Val] )
+			VAR MaxV = MAXX ( Pts, [@Val] )
+			VAR Rng = MaxV - MinV
+			VAR Ranked = ADDCOLUMNS ( Pts, "@Idx", RANKX ( Pts, DimDate[Year Month Sort], , ASC, DENSE ) )
+			VAR W = 120
+			VAR H = 32
+			VAR Coords =
+			    CONCATENATEX (
+			        Ranked,
+			        FORMAT ( DIVIDE ( [@Idx] - 1, N - 1, 0 ) * W, "0.0" ) & ","
+			            & FORMAT ( H - 3 - DIVIDE ( [@Val] - MinV, Rng, 0 ) * ( H - 6 ), "0.0" ),
+			        " ",
+			        [@Idx], ASC
+			    )
+			RETURN
+			    IF (
+			        N >= 2,
+			        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " & W & " " & H
+			            & "' preserveAspectRatio='none'><polyline fill='none' stroke='%2312385A' stroke-width='2' stroke-linejoin='round' stroke-linecap='round' points='"
+			            & Coords & "'/></svg>"
+			    )
+		displayFolder: 09 Sparklines
+		lineageTag: da7bad97-0119-41d0-84e1-b3a343dc8868
+		dataCategory: ImageUrl
+
+	/// Sparkline of term deposits opened by campaign month, as an inline SVG for the card visual image slot.
+	measure 'Sparkline Subscriptions' =
+			VAR Src = CALCULATETABLE ( VALUES ( DimDate[Year Month Sort] ), FactCampaignContact )
+			VAR Pts = FILTER ( ADDCOLUMNS ( Src, "@Val", CALCULATE ( [Subscriptions] ) ), NOT ISBLANK ( [@Val] ) )
+			VAR N = COUNTROWS ( Pts )
+			VAR MinV = MINX ( Pts, [@Val] )
+			VAR MaxV = MAXX ( Pts, [@Val] )
+			VAR Rng = MaxV - MinV
+			VAR Ranked = ADDCOLUMNS ( Pts, "@Idx", RANKX ( Pts, DimDate[Year Month Sort], , ASC, DENSE ) )
+			VAR W = 120
+			VAR H = 32
+			VAR Coords =
+			    CONCATENATEX (
+			        Ranked,
+			        FORMAT ( DIVIDE ( [@Idx] - 1, N - 1, 0 ) * W, "0.0" ) & ","
+			            & FORMAT ( H - 3 - DIVIDE ( [@Val] - MinV, Rng, 0 ) * ( H - 6 ), "0.0" ),
+			        " ",
+			        [@Idx], ASC
+			    )
+			RETURN
+			    IF (
+			        N >= 2,
+			        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " & W & " " & H
+			            & "' preserveAspectRatio='none'><polyline fill='none' stroke='%232E7D8F' stroke-width='2' stroke-linejoin='round' stroke-linecap='round' points='"
+			            & Coords & "'/></svg>"
+			    )
+		displayFolder: 09 Sparklines
+		lineageTag: 07c87ed9-0640-4da6-8949-cb03d55dfffe
+		dataCategory: ImageUrl
+
+	/// Sparkline of conversion rate by campaign month, as an inline SVG for the card visual image slot. Rising line shows the shift from volume to targeting.
+	measure 'Sparkline Conversion Rate' =
+			VAR Src = CALCULATETABLE ( VALUES ( DimDate[Year Month Sort] ), FactCampaignContact )
+			VAR Pts = FILTER ( ADDCOLUMNS ( Src, "@Val", CALCULATE ( [Conversion Rate %] ) ), NOT ISBLANK ( [@Val] ) )
+			VAR N = COUNTROWS ( Pts )
+			VAR MinV = MINX ( Pts, [@Val] )
+			VAR MaxV = MAXX ( Pts, [@Val] )
+			VAR Rng = MaxV - MinV
+			VAR Ranked = ADDCOLUMNS ( Pts, "@Idx", RANKX ( Pts, DimDate[Year Month Sort], , ASC, DENSE ) )
+			VAR W = 120
+			VAR H = 32
+			VAR Coords =
+			    CONCATENATEX (
+			        Ranked,
+			        FORMAT ( DIVIDE ( [@Idx] - 1, N - 1, 0 ) * W, "0.0" ) & ","
+			            & FORMAT ( H - 3 - DIVIDE ( [@Val] - MinV, Rng, 0 ) * ( H - 6 ), "0.0" ),
+			        " ",
+			        [@Idx], ASC
+			    )
+			RETURN
+			    IF (
+			        N >= 2,
+			        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " & W & " " & H
+			            & "' preserveAspectRatio='none'><polyline fill='none' stroke='%23E8A33D' stroke-width='2' stroke-linejoin='round' stroke-linecap='round' points='"
+			            & Coords & "'/></svg>"
+			    )
+		displayFolder: 09 Sparklines
+		lineageTag: 43a25abd-4f0b-40e2-953c-a10b983ec854
+		dataCategory: ImageUrl
+
+	/// Sparkline of calls needed per deposit won, by campaign month, as an inline SVG for the card visual image slot. A falling line is an improvement.
+	measure 'Sparkline Contacts per Conversion' =
+			VAR Src = CALCULATETABLE ( VALUES ( DimDate[Year Month Sort] ), FactCampaignContact )
+			VAR Pts = FILTER ( ADDCOLUMNS ( Src, "@Val", CALCULATE ( [Contacts per Conversion] ) ), NOT ISBLANK ( [@Val] ) )
+			VAR N = COUNTROWS ( Pts )
+			VAR MinV = MINX ( Pts, [@Val] )
+			VAR MaxV = MAXX ( Pts, [@Val] )
+			VAR Rng = MaxV - MinV
+			VAR Ranked = ADDCOLUMNS ( Pts, "@Idx", RANKX ( Pts, DimDate[Year Month Sort], , ASC, DENSE ) )
+			VAR W = 120
+			VAR H = 32
+			VAR Coords =
+			    CONCATENATEX (
+			        Ranked,
+			        FORMAT ( DIVIDE ( [@Idx] - 1, N - 1, 0 ) * W, "0.0" ) & ","
+			            & FORMAT ( H - 3 - DIVIDE ( [@Val] - MinV, Rng, 0 ) * ( H - 6 ), "0.0" ),
+			        " ",
+			        [@Idx], ASC
+			    )
+			RETURN
+			    IF (
+			        N >= 2,
+			        "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " & W & " " & H
+			            & "' preserveAspectRatio='none'><polyline fill='none' stroke='%235A6B75' stroke-width='2' stroke-linejoin='round' stroke-linecap='round' points='"
+			            & Coords & "'/></svg>"
+			    )
+		displayFolder: 09 Sparklines
+		lineageTag: c481f995-6dda-4c44-9fea-107e438196e7
+		dataCategory: ImageUrl
+
+	/// Change in deposits won from the first campaign year to the last (-19.9%). The pairing is the point: volume fell 93% while deposits fell only 20%. Pinned against cross-filtering.
+	measure 'Subscriptions Change vs First Year %' =
+			CALCULATE (
+			    VAR FirstYear = CALCULATE ( MIN ( DimDate[Year] ), FactCampaignContact )
+			    VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			    VAR First = CALCULATE ( [Subscriptions], REMOVEFILTERS ( DimDate ), DimDate[Year] = FirstYear )
+			    VAR Final = CALCULATE ( [Subscriptions], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+			    RETURN
+			        IF ( FirstYear <> FinalYear, DIVIDE ( Final - First, First ) ),
+			    REMOVEFILTERS ()
+			)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 10 Headline (pinned)
+		lineageTag: d6d0bdf4-a029-4365-a4c4-4f0d33024f2f
+
+	/// Change in calls needed per deposit from the first campaign year to the last (-90.7%). Negative is an improvement. Pinned against cross-filtering.
+	measure 'Contacts per Conversion Change vs First Year %' =
+			CALCULATE (
+			    VAR FirstYear = CALCULATE ( MIN ( DimDate[Year] ), FactCampaignContact )
+			    VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			    VAR First = CALCULATE ( [Contacts per Conversion], REMOVEFILTERS ( DimDate ), DimDate[Year] = FirstYear )
+			    VAR Final = CALCULATE ( [Contacts per Conversion], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+			    RETURN
+			        IF ( FirstYear <> FinalYear, DIVIDE ( Final - First, First ) ),
+			    REMOVEFILTERS ()
+			)
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 10 Headline (pinned)
+		lineageTag: da41239f-7da6-48d0-92a4-909e3b7f145a
+
+	/// How many times higher the conversion rate is in the last campaign year than the first (10.8x). Pinned against cross-filtering.
+	measure 'Conversion Lift vs First Year (x)' =
+			CALCULATE (
+			    VAR FirstYear = CALCULATE ( MIN ( DimDate[Year] ), FactCampaignContact )
+			    VAR FinalYear = CALCULATE ( MAX ( DimDate[Year] ), FactCampaignContact )
+			    VAR First = CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( DimDate ), DimDate[Year] = FirstYear )
+			    VAR Final = CALCULATE ( [Conversion Rate %], REMOVEFILTERS ( DimDate ), DimDate[Year] = FinalYear )
+			    RETURN
+			        IF ( FirstYear <> FinalYear && First > 0, DIVIDE ( Final, First ) ),
+			    REMOVEFILTERS ()
+			)
+		formatString: 0.0"x"
+		displayFolder: 10 Headline (pinned)
+		lineageTag: 66ca5406-d679-4e6b-a9a6-aa54aeda347a
+
+	/// Deposits won, limited to the five occupations that produced the most, so the
+	/// donut stays readable. Blank for the rest.
+	measure 'Subscriptions (Top Segments)' =
+			VAR Ranked =
+			    RANKX ( ALL ( DimJob[Job] ), [Subscriptions], , DESC, DENSE )
+			RETURN
+			    IF ( Ranked <= 5, [Subscriptions] )
+		formatString: #,0
+		displayFolder: 04 Segment Analysis
+		lineageTag: f29fb9f5-8724-4361-a327-2c9d732746eb
+
+	/// Campaign window in view, as a compact range like 'May 2008 - Nov 2010'. Same logic as Data Coverage Note without the sentence prefix, for narrow containers. Collapses to a single month when only one is in view.
+	measure 'Campaign Window' =
+			// Compact form of Data Coverage Note, for narrow containers like the rail footer.
+			VAR MonthsInView =
+			    CALCULATETABLE (
+			        SUMMARIZE ( DimDate, DimDate[Year Month Sort], DimDate[Year Month Label] ),
+			        FactCampaignContact
+			    )
+			VAR FirstMonth =
+			    MAXX ( TOPN ( 1, MonthsInView, [Year Month Sort], ASC ), [Year Month Label] )
+			VAR LastMonth =
+			    MAXX ( TOPN ( 1, MonthsInView, [Year Month Sort], DESC ), [Year Month Label] )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( FirstMonth ),
+			        IF ( FirstMonth = LastMonth, FirstMonth, FirstMonth & " - " & LastMonth )
+			    )
+		displayFolder: 06 Report Support
+		lineageTag: 77d0396b-4c0d-4f4c-9f07-99644d098b10
+
+	/// Clients contacted across the whole campaign, pinned so cross-filtering cannot change it. Use on the Executive Overview headline; use Total Contacts anywhere the figure should respond to filters.
+	measure 'Clients Contacted' =
+			// Pinned headline: REMOVEFILTERS() with no argument clears the whole model, so
+			// this never moves when a reader clicks a bar, slice or table row.
+			CALCULATE ( [Total Contacts], REMOVEFILTERS () )
+		formatString: #,0
+		displayFolder: 10 Headline (pinned)
+		lineageTag: 53b63264-9cdf-444e-9d31-2ac706d36d2f
+
+	/// Term deposits opened across the whole campaign, pinned against cross-filtering.
+	measure 'Deposits Opened' = CALCULATE ( [Subscriptions], REMOVEFILTERS () )
+		formatString: #,0
+		displayFolder: 10 Headline (pinned)
+		lineageTag: cfa33401-e936-4dbd-860e-de4f47df9aa6
+
+	/// Campaign-wide conversion rate of 11.27%, pinned against cross-filtering.
+	measure 'Campaign Conversion Rate' = CALCULATE ( [Conversion Rate %], REMOVEFILTERS () )
+		formatString: 0.00%
+		displayFolder: 10 Headline (pinned)
+		lineageTag: 8b71873d-a841-49d2-a875-836682300cdb
+
+	/// Campaign-wide calls needed per deposit won, pinned against cross-filtering.
+	measure 'Calls per Deposit' = CALCULATE ( [Contacts per Conversion], REMOVEFILTERS () )
+		formatString: #,0.0
+		displayFolder: 10 Headline (pinned)
+		lineageTag: 3dffd318-5a2f-401f-b90f-40e6005b4341
+
+	/// Placeholder so the table is valid. Holds no data.
+	column Column1
+		dataType: string
+		isHidden
+		lineageTag: 7b1c2811-9038-59fe-847b-f1c365a67071
+		summarizeBy: none
+		sourceColumn: Column1
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+				    Source = #table ( type table [ Column1 = text ], { { "" } } )
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

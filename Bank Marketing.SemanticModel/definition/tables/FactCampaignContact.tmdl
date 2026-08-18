@@ -1,0 +1,324 @@
+/// Grain: one row per client contacted in the campaign, describing that client's LAST contact. 41,188 rows covering May 2008 - November 2010 for a Portuguese bank's term-deposit telemarketing.
+table FactCampaignContact
+	lineageTag: 27bca72b-6cba-5775-aafe-9d1d7a99b032
+
+	/// First day of the campaign month this contact belongs to. Derived - the source file has no year; see the CampaignPeriods query.
+	column 'Campaign Month'
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: ee6dcba8-1f8b-50e6-9236-87e14a8b0d8b
+		summarizeBy: none
+		sourceColumn: Campaign Month
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Client age in years (17-98).
+	column Age
+		dataType: int64
+		formatString: 0
+		lineageTag: 0f76a911-4ad7-52b8-8571-7052c3d966bb
+		summarizeBy: none
+		sourceColumn: Age
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Age grouped into six bands. Key to DimAgeBand.
+	column 'Age Band'
+		dataType: string
+		isHidden
+		lineageTag: 014d85a8-85a1-5330-8909-052b0e1eed58
+		summarizeBy: none
+		sourceColumn: Age Band
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Client occupation. Key to DimJob.
+	column Job
+		dataType: string
+		isHidden
+		lineageTag: 60a8b4a0-8f70-5ee6-bbbe-19a6f1bc8723
+		summarizeBy: none
+		sourceColumn: Job
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Highest education level. Key to DimEducation.
+	column Education
+		dataType: string
+		isHidden
+		lineageTag: b5f1f9bc-19d9-5ed0-be49-a2bc85c5f42b
+		summarizeBy: none
+		sourceColumn: Education
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Marital status. 'Divorced' includes widowed.
+	column 'Marital Status'
+		dataType: string
+		lineageTag: 95cd9642-01b1-5458-9665-c3a281ef8a2d
+		summarizeBy: none
+		sourceColumn: Marital Status
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Does the client have credit in default? Yes / No / Unknown.
+	column 'Credit in Default'
+		dataType: string
+		lineageTag: 47d22b76-c836-5147-95e1-346cbba5b224
+		summarizeBy: none
+		sourceColumn: Credit in Default
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Does the client hold a housing loan? Yes / No / Unknown.
+	column 'Housing Loan'
+		dataType: string
+		lineageTag: 2cce0119-d337-520e-b400-e1b84a3be485
+		summarizeBy: none
+		sourceColumn: Housing Loan
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Does the client hold a personal loan? Yes / No / Unknown.
+	column 'Personal Loan'
+		dataType: string
+		lineageTag: a79dd97a-d793-594a-a08a-7227e9128680
+		summarizeBy: none
+		sourceColumn: Personal Loan
+
+		annotation SummarizationSetBy = Automatic
+
+	/// How the last contact was made: Cellular or Telephone.
+	column 'Contact Channel'
+		dataType: string
+		lineageTag: 812db7d0-b4d9-529d-a03d-276a7028aa76
+		summarizeBy: none
+		sourceColumn: Contact Channel
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Weekday of the last contact.
+	column 'Contact Day of Week'
+		dataType: string
+		lineageTag: 9609f6b6-34a4-5197-8648-6670cb70efe0
+		summarizeBy: none
+		sourceColumn: Contact Day of Week
+		sortByColumn: 'Contact Day of Week Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monday=1 ... Friday=5. Sort order for Contact Day of Week.
+	column 'Contact Day of Week Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f52854f4-d197-5074-a3be-c8112fa1a3fd
+		summarizeBy: none
+		sourceColumn: Contact Day of Week Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Length of the last call in seconds. NOTE: only known after the call, so it explains outcomes but cannot predict them.
+	column 'Call Duration (Seconds)'
+		dataType: int64
+		formatString: #,0
+		lineageTag: fe3d3954-e720-5a17-b270-1c8b268c68f8
+		summarizeBy: none
+		sourceColumn: Call Duration (Seconds)
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Contacts made to this client during this campaign, including the last one (1-56).
+	column 'Contacts This Campaign'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 872808a7-3231-579c-b59c-141bb6c22a8d
+		summarizeBy: none
+		sourceColumn: Contacts This Campaign
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Days since the client was last contacted in a prior campaign. Blank when never previously contacted (source coded this as 999).
+	column 'Days Since Previous Contact'
+		dataType: int64
+		formatString: #,0
+		lineageTag: 8bf74f51-9098-5d5c-894c-cbd0fb725710
+		summarizeBy: none
+		sourceColumn: Days Since Previous Contact
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Contacts made to this client before this campaign (0-7).
+	column 'Previous Contacts'
+		dataType: int64
+		formatString: #,0
+		lineageTag: adc9302b-f1a0-5fb1-8059-3c8ad1b798b7
+		summarizeBy: none
+		sourceColumn: Previous Contacts
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Result of the previous campaign: Success, Failure, or Not Previously Contacted.
+	column 'Previous Outcome'
+		dataType: string
+		lineageTag: 3592abb6-e7d2-5d99-bb8f-8cefb3bda906
+		summarizeBy: none
+		sourceColumn: Previous Outcome
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Was this client contacted in an earlier campaign? Yes / No.
+	column 'Previously Contacted'
+		dataType: string
+		lineageTag: 4f515b97-ac83-5d11-b61d-e6f26197bcf0
+		summarizeBy: none
+		sourceColumn: Previously Contacted
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Did the client subscribe to the term deposit? Yes / No. This is the campaign outcome.
+	column Subscribed
+		dataType: string
+		lineageTag: f0450a63-9a8d-540e-b500-2948054f1697
+		summarizeBy: none
+		sourceColumn: Subscribed
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1 when Subscribed = Yes, else 0. Feeds the Subscriptions measure.
+	column 'Subscribed Flag'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 84e192ee-7b25-5057-8c7d-0779ba9fb69e
+		summarizeBy: sum
+		sourceColumn: Subscribed Flag
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Quarterly employment variation rate for Portugal at the time of contact.
+	column 'Employment Variation Rate'
+		dataType: double
+		formatString: 0.0
+		lineageTag: de426aac-7369-5ca4-83ea-4e912ff53640
+		summarizeBy: none
+		sourceColumn: Employment Variation Rate
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monthly consumer price index. Also the natural key that identifies the campaign month.
+	column 'Consumer Price Index'
+		dataType: double
+		isHidden
+		formatString: 0.000
+		lineageTag: 158b8c60-0182-591f-9b2d-03eb3c88a0a1
+		summarizeBy: none
+		sourceColumn: Consumer Price Index
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Monthly consumer confidence index at the time of contact.
+	column 'Consumer Confidence Index'
+		dataType: double
+		formatString: 0.0
+		lineageTag: ebf7eaa7-66df-525d-8a52-b829c8badeca
+		summarizeBy: none
+		sourceColumn: Consumer Confidence Index
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Daily 3-month Euribor rate at the time of contact.
+	column 'Euribor 3 Month Rate'
+		dataType: double
+		formatString: 0.000
+		lineageTag: fedc25a9-65d8-57be-9780-35ee58949f80
+		summarizeBy: none
+		sourceColumn: Euribor 3 Month Rate
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Quarterly number of employees indicator for Portugal.
+	column 'Number of Employees'
+		dataType: double
+		formatString: #,0.0
+		lineageTag: da9ab59e-f481-5fea-9a5c-276ed967828f
+		summarizeBy: none
+		sourceColumn: Number of Employees
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactCampaignContact = m
+		mode: import
+		source =
+				let
+				    Source = CampaignContactsRaw,
+				    // attach the derived campaign month (see CampaignPeriods for how the year is recovered)
+				    Joined = Table.NestedJoin ( Source, { "month", "cons.price.idx" }, CampaignPeriods, { "month", "cons.price.idx" }, "P", JoinKind.LeftOuter ),
+				    Period = Table.ExpandTableColumn ( Joined, "P", { "CampaignMonthStart" }, { "Campaign Month" } ),
+				    // business-friendly labels for the coded categorical values
+				    JobMap = [ #"admin." = "Admin", #"blue-collar" = "Blue Collar", entrepreneur = "Entrepreneur",
+				               housemaid = "Housemaid", management = "Management", retired = "Retired",
+				               #"self-employed" = "Self-Employed", services = "Services", student = "Student",
+				               technician = "Technician", unemployed = "Unemployed", unknown = "Unknown" ],
+				    EduMap = [ #"basic.4y" = "Basic 4y", #"basic.6y" = "Basic 6y", #"basic.9y" = "Basic 9y",
+				               #"high.school" = "High School", illiterate = "Illiterate",
+				               #"professional.course" = "Professional Course",
+				               #"university.degree" = "University Degree", unknown = "Unknown" ],
+				    MaritalMap = [ divorced = "Divorced", married = "Married", single = "Single", unknown = "Unknown" ],
+				    OutcomeMap = [ success = "Success", failure = "Failure", nonexistent = "Not Previously Contacted" ],
+				    DayMap = [ mon = "Monday", tue = "Tuesday", wed = "Wednesday", thu = "Thursday", fri = "Friday" ],
+				    YesNoMap = [ no = "No", yes = "Yes", unknown = "Unknown" ],
+				    Titles = Table.TransformColumns (
+				        Period,
+				        {
+				            { "job", each Record.FieldOrDefault ( JobMap, _, "Unknown" ), type text },
+				            { "education", each Record.FieldOrDefault ( EduMap, _, "Unknown" ), type text },
+				            { "marital", each Record.FieldOrDefault ( MaritalMap, _, "Unknown" ), type text },
+				            { "contact", each if _ = "cellular" then "Cellular" else "Telephone", type text },
+				            { "poutcome", each Record.FieldOrDefault ( OutcomeMap, _, "Unknown" ), type text },
+				            { "day_of_week", each Record.FieldOrDefault ( DayMap, _, "Unknown" ), type text },
+				            { "default", each Record.FieldOrDefault ( YesNoMap, _, "Unknown" ), type text },
+				            { "housing", each Record.FieldOrDefault ( YesNoMap, _, "Unknown" ), type text },
+				            { "loan", each Record.FieldOrDefault ( YesNoMap, _, "Unknown" ), type text },
+				            { "y", each if _ = "yes" then "Yes" else "No", type text }
+				        }
+				    ),
+				    Renamed = Table.RenameColumns (
+				        Titles,
+				        {
+				            { "age", "Age" }, { "job", "Job" }, { "marital", "Marital Status" },
+				            { "education", "Education" }, { "default", "Credit in Default" },
+				            { "housing", "Housing Loan" }, { "loan", "Personal Loan" },
+				            { "contact", "Contact Channel" }, { "day_of_week", "Contact Day of Week" },
+				            { "duration", "Call Duration (Seconds)" }, { "campaign", "Contacts This Campaign" },
+				            { "pdays", "Days Since Previous Contact" }, { "previous", "Previous Contacts" },
+				            { "poutcome", "Previous Outcome" }, { "emp.var.rate", "Employment Variation Rate" },
+				            { "cons.price.idx", "Consumer Price Index" }, { "cons.conf.idx", "Consumer Confidence Index" },
+				            { "euribor3m", "Euribor 3 Month Rate" }, { "nr.employed", "Number of Employees" },
+				            { "y", "Subscribed" }
+				        }
+				    ),
+				    DaySort = Table.AddColumn ( Renamed, "Contact Day of Week Sort", each
+				        Record.FieldOrDefault ( [ Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5 ],
+				                                [Contact Day of Week], 9 ), Int64.Type ),
+				    // 1/0 flag so Subscriptions is a plain SUM rather than a filtered COUNTROWS
+				    Flag = Table.AddColumn ( DaySort, "Subscribed Flag", each if [Subscribed] = "Yes" then 1 else 0, Int64.Type ),
+				    Band = Table.AddColumn ( Flag, "Age Band", each
+				        if [Age] < 25 then "Under 25"
+				        else if [Age] < 35 then "25-34"
+				        else if [Age] < 45 then "35-44"
+				        else if [Age] < 55 then "45-54"
+				        else if [Age] < 65 then "55-64"
+				        else "65+", type text ),
+				    // pdays uses the sentinel 999 for "never contacted before"; keep the fact honest
+				    Prev = Table.AddColumn ( Band, "Previously Contacted", each if [Days Since Previous Contact] = 999 then "No" else "Yes", type text ),
+				    Cleaned = Table.TransformColumns ( Prev, { { "Days Since Previous Contact", each if _ = 999 then null else _, Int64.Type } } ),
+				    Removed = Table.RemoveColumns ( Cleaned, { "month", "SourceRowOrder" } )
+				in
+				    Removed
+
+	annotation PBI_ResultType = Table
+

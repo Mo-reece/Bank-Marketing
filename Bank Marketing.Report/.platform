@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Bank Marketing"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "fddee026-b12b-49be-8429-60e9620a4253"
+  }
+}

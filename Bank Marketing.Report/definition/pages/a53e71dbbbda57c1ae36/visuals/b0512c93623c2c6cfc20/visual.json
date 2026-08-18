@@ -1,0 +1,175 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "b0512c93623c2c6cfc20",
+  "position": {
+    "x": 240,
+    "y": 186,
+    "z": 6,
+    "height": 104,
+    "width": 1024,
+    "tabOrder": 6
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Contacts Change vs First Year %"
+                }
+              },
+              "queryRef": "_Measures.Contacts Change vs First Year %",
+              "nativeQueryRef": "Contacts Change vs First Year %",
+              "displayName": "contacts vs 2008"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Subscriptions Change vs First Year %"
+                }
+              },
+              "queryRef": "_Measures.Subscriptions Change vs First Year %",
+              "nativeQueryRef": "Subscriptions Change vs First Year %",
+              "displayName": "deposits vs 2008"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Conversion Lift vs First Year (x)"
+                }
+              },
+              "queryRef": "_Measures.Conversion Lift vs First Year (x)",
+              "nativeQueryRef": "Conversion Lift vs First Year (x)",
+              "displayName": "conversion vs 2008"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Contacts per Conversion Change vs First Year %"
+                }
+              },
+              "queryRef": "_Measures.Contacts per Conversion Change vs First Year %",
+              "nativeQueryRef": "Contacts per Conversion Change vs First Year %",
+              "displayName": "calls per deposit vs 2008"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "callout": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#12385A'"
+                    }
+                  }
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryLabel": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#5A6B75'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Change from the first campaign year to the last: contacts down 92.6 percent, deposits down only 19.9 percent, conversion 10.8 times higher, calls per deposit down 90.7 percent.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

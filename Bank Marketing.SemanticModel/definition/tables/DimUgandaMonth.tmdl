@@ -1,0 +1,85 @@
+/// Month calendar for the Bank of Uganda data, Jan 2005 - Jul 2026. Separate from DimDate because the two subject areas share no timeline and are never analysed together.
+table DimUgandaMonth
+	lineageTag: 13e5bc42-27df-5734-9d0a-68bda84b84f8
+
+	/// First day of the month. Key to FactUgandaIndicator.
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 590b5faa-c1f7-5c61-8952-a37260bee742
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d28efef-6d14-5de0-a433-81fe46c1216e
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1-12.
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 71cba62e-ef47-52e8-8339-949dd94cec08
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Three-letter month name.
+	column Month
+		dataType: string
+		lineageTag: 9ff1179b-ca09-546e-bbc9-bfead1a5f157
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Month and year, e.g. 'Jul 2026'.
+	column 'Year Month Label'
+		dataType: string
+		lineageTag: f394543e-5341-5566-ae38-faff6b2c56c2
+		summarizeBy: none
+		sourceColumn: Year Month Label
+		sortByColumn: 'Year Month Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// yyyyMM integer.
+	column 'Year Month Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ac383ec5-3a9e-5a35-bdc0-fc252cdcbd12
+		summarizeBy: none
+		sourceColumn: Year Month Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimUgandaMonth = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct ( Table.SelectColumns ( UgandaIndicatorsRaw, { "Date" } ) ),
+				    C1 = Table.AddColumn ( Source, "Year", each Date.Year ( [Date] ), Int64.Type ),
+				    C2 = Table.AddColumn ( C1, "Month Number", each Date.Month ( [Date] ), Int64.Type ),
+				    C3 = Table.AddColumn ( C2, "Month", each Date.ToText ( [Date], [ Format = "MMM", Culture = "en-US" ] ), type text ),
+				    C4 = Table.AddColumn ( C3, "Year Month Label", each Date.ToText ( [Date], [ Format = "MMM yyyy", Culture = "en-US" ] ), type text ),
+				    C5 = Table.AddColumn ( C4, "Year Month Sort", each Date.Year ( [Date] ) * 100 + Date.Month ( [Date] ), Int64.Type ),
+				    Sorted = Table.Sort ( C5, { { "Date", Order.Ascending } } )
+				in
+				    Sorted
+
+	annotation PBI_ResultType = Table
+

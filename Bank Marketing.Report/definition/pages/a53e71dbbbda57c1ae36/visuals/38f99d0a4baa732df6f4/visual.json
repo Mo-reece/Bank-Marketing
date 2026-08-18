@@ -1,0 +1,165 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
+  "name": "38f99d0a4baa732df6f4",
+  "position": {
+    "x": 912,
+    "y": 476,
+    "z": 11,
+    "height": 176,
+    "width": 352,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "WHAT TO DO NEXT",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#5A6B75",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "\u2713 Call prior subscribers first.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#4C8C5A",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "   1,175 of them convert at 66.9%.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#5A6B75"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "\u2713 Stop after the third call.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#4C8C5A",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "   13.0% on the first call, 3.1% from the eleventh.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#5A6B75"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "\u2713 Use mobile, not landline.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#4C8C5A",
+                      "fontWeight": "bold"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "   14.7% against 5.2%.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#5A6B75"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Recommended actions: call prior subscribers first, who convert at 66.9 percent; stop after the third call, since conversion falls from 13.0 to 3.1 percent; and use mobile rather than landline, 14.7 against 5.2 percent.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

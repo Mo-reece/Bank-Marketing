@@ -1,0 +1,24 @@
+relationship 1a8bac11-ded0-57bf-bb01-8047a25fd08d
+	fromColumn: FactCampaignContact.'Campaign Month'
+	toColumn: DimDate.Date
+
+relationship dc185882-ec0c-5e89-bea7-3863b50b1bf0
+	fromColumn: FactCampaignContact.Job
+	toColumn: DimJob.Job
+
+relationship 9194f45a-0f93-5e3c-8241-646be0dfbc26
+	fromColumn: FactCampaignContact.Education
+	toColumn: DimEducation.Education
+
+relationship aadd7f9d-756b-5e1e-8aa5-b47a6a513e0a
+	fromColumn: FactCampaignContact.'Age Band'
+	toColumn: DimAgeBand.'Age Band'
+
+relationship 14c5f25d-beca-5227-94ce-405df200a5f1
+	fromColumn: FactUgandaIndicator.Date
+	toColumn: DimUgandaMonth.Date
+
+relationship e92f2346-3b89-58f8-82a7-217f2b825a4e
+	fromColumn: FactUgandaIndicator.Indicator
+	toColumn: DimIndicator.Indicator
+

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "831d60d7090d57029506",
+  "position": {
+    "x": 792,
+    "y": 440,
+    "z": 0,
+    "width": 468,
+    "height": 188,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "What this says  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "The CBR has swung from 23.0% at its Nov 2011 peak to 6.5% in Jun 2021 and back to 9.75% today. Lending rates have not followed nearly as far: the gap over the policy rate has averaged 9.7pp since 2011 and widened to 13.9pp in Jul 2020. Meanwhile the shilling has lost 119% against the dollar since 2005, peaking near 3,932 in Feb 2024.\n",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#33454F"
+                    }
+                  },
+                  {
+                    "value": "Source: Bank of Uganda open data portal, datasets kwhzbwc and mlhqkfg. Lending and deposit rates publish one month behind the policy rate, so the two cards above can sit in different months.",
+                    "textStyle": {
+                      "fontSize": "8pt",
+                      "color": "#7A8B95",
+                      "fontStyle": "italic"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. What this says  The CBR has swung from 23.0% at its Nov 2011 peak to 6.5% in Jun 2021 and back to 9.75% today. Lending rates have not followed nearly as far: the gap over the policy rate has averaged 9.7pp since 2011 and widened to 13.9pp in Jul 2020. Meanwhile the shilling has lost 119% against the dollar since 2005, peaking near 3,932 in Feb 2024.\nSource: Bank of Uganda open data portal, datasets kwhzbwc and mlhqkfg. Lending and deposit rates publish one month behind the policy rate, so the two cards above can sit in different months.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

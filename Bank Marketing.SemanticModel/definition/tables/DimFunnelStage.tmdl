@@ -1,0 +1,35 @@
+/// Grain: one row per targeting-funnel stage. Disconnected lookup - no relationship to the fact. Each stage is a strict subset of the one above it, so the funnel is honest: 41,188 -> 26,144 -> 21,740 -> 18,246 -> 1,175. Labels are kept under 17 characters so they do not truncate in the funnel visual.
+table DimFunnelStage
+	lineageTag: c225fef3-552b-46cc-aa75-c63791e445d9
+
+	/// Sort order for Funnel Stage.
+	column 'Stage Order'
+		isHidden
+		lineageTag: cbf52a57-c3f8-47ae-aadb-e709ec59a4fb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Stage Order]
+
+	/// Cumulative targeting rule applied to the campaign. Each stage narrows the audience of the stage above it.
+	column 'Funnel Stage'
+		lineageTag: 1122f4b7-47df-497a-bfae-81f88d546f3b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Funnel Stage]
+		sortByColumn: 'Stage Order'
+
+	partition DimFunnelStage = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Stage Order", INTEGER,
+				    "Funnel Stage", STRING,
+				    {
+				        { 1, "All contacted" },
+				        { 2, "On mobile" },
+				        { 3, "First 3 calls" },
+				        { 4, "No prior refusal" },
+				        { 5, "Prior subscriber" }
+				    }
+				)
+

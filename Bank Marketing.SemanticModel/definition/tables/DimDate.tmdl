@@ -1,0 +1,127 @@
+/// Contiguous daily calendar, 2008-01-01 to 2010-12-31. Marked as the model date table. The campaign fact joins on the first day of its campaign month.
+table DimDate
+	lineageTag: 39204b82-175f-5cde-85a3-c23dc93572b1
+	dataCategory: Time
+
+	/// Calendar date. Key to FactCampaignContact[Campaign Month].
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: 53f8934d-e43c-5a71-80d6-2acc77e4e936
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Calendar year.
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 51df1b63-d645-5030-8b1a-0baade81eb74
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	/// 1-12. Sort order for Month.
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e64125ca-0158-5f46-9800-22140de3ea37
+		summarizeBy: none
+		sourceColumn: Month Number
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Three-letter month name.
+	column Month
+		dataType: string
+		lineageTag: e9a0e942-48d8-5535-b26d-8cc857d51b30
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Number'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// yyyy-MM key.
+	column 'Year Month'
+		dataType: string
+		isHidden
+		lineageTag: 343126b4-fd60-5617-9d98-e91daf4644c2
+		summarizeBy: none
+		sourceColumn: Year Month
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Month and year, e.g. 'May 2008'. Use this on trend axes.
+	column 'Year Month Label'
+		dataType: string
+		lineageTag: 5bc78a43-7568-55fb-8481-12ffd7cac4f4
+		summarizeBy: none
+		sourceColumn: Year Month Label
+		sortByColumn: 'Year Month Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// yyyyMM integer. Sort order for Year Month Label.
+	column 'Year Month Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fb374953-e447-5e9e-8079-6bf069797e99
+		summarizeBy: none
+		sourceColumn: Year Month Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Calendar quarter, Q1-Q4.
+	column Quarter
+		dataType: string
+		lineageTag: 2b2d9256-6a19-5f28-b0bb-ee0c3ed71b34
+		summarizeBy: none
+		sourceColumn: Quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	/// TRUE for the 26 months the campaign actually ran. The remaining months had no contacts.
+	column 'Is Campaign Month'
+		dataType: boolean
+		lineageTag: 5424984a-5309-5370-ba95-aad9e7606d82
+		summarizeBy: none
+		sourceColumn: Is Campaign Month
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDate = m
+		mode: import
+		source =
+				let
+				    // Contiguous daily calendar covering the whole campaign window plus the
+				    // calendar years that bracket it, so time intelligence behaves. The campaign
+				    // itself only touches 26 of these months - the gaps are real (no contacts in
+				    // Jan/Feb of 2009 and 2010, or Sep 2008) and the report shows them honestly.
+				    Start = #date ( 2008, 1, 1 ),
+				    End = #date ( 2010, 12, 31 ),
+				    Days = List.Dates ( Start, Duration.Days ( End - Start ) + 1, #duration ( 1, 0, 0, 0 ) ),
+				    AsTable = Table.FromList ( Days, Splitter.SplitByNothing (), { "Date" } ),
+				    Typed = Table.TransformColumnTypes ( AsTable, { { "Date", type date } } ),
+				    Cols = Table.AddColumn ( Typed, "Year", each Date.Year ( [Date] ), Int64.Type ),
+				    C2 = Table.AddColumn ( Cols, "Month Number", each Date.Month ( [Date] ), Int64.Type ),
+				    C3 = Table.AddColumn ( C2, "Month", each Date.ToText ( [Date], [ Format = "MMM", Culture = "en-US" ] ), type text ),
+				    C4 = Table.AddColumn ( C3, "Year Month", each Date.ToText ( [Date], [ Format = "yyyy-MM", Culture = "en-US" ] ), type text ),
+				    C5 = Table.AddColumn ( C4, "Year Month Label", each Date.ToText ( [Date], [ Format = "MMM yyyy", Culture = "en-US" ] ), type text ),
+				    C6 = Table.AddColumn ( C5, "Year Month Sort", each Date.Year ( [Date] ) * 100 + Date.Month ( [Date] ), Int64.Type ),
+				    C7 = Table.AddColumn ( C6, "Quarter", each "Q" & Text.From ( Date.QuarterOfYear ( [Date] ) ), type text ),
+				    // which months the campaign actually ran in - lets visuals drop empty months deliberately
+				    Campaign = Table.AddColumn ( C7, "Is Campaign Month",
+				        each List.Contains ( List.Transform ( CampaignPeriods[CampaignMonthStart], each Date.ToText ( _, [ Format = "yyyy-MM", Culture = "en-US" ] ) ),
+				                             Date.ToText ( [Date], [ Format = "yyyy-MM", Culture = "en-US" ] ) ), type logical )
+				in
+				    Campaign
+
+	annotation PBI_ResultType = Table
+

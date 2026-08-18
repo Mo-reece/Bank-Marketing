@@ -1,0 +1,53 @@
+/// Client age grouped into six bands. Conversion is U-shaped across these: highest at both ends, lowest in mid-career.
+table DimAgeBand
+	lineageTag: 80405d20-4061-5be9-9da0-4f4a23017e29
+
+	/// Age band.
+	column 'Age Band'
+		dataType: string
+		isKey
+		lineageTag: d7d9d2d3-f9a6-5162-80a0-7673b243236a
+		summarizeBy: none
+		sourceColumn: Age Band
+		sortByColumn: 'Age Band Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Youngest to oldest.
+	column 'Age Band Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c0b708b8-3383-5640-b580-564095cab59d
+		summarizeBy: none
+		sourceColumn: Age Band Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Age band rolled up to Early career / Mid career / Pre-retirement / Retirement.
+	column 'Life Stage'
+		dataType: string
+		lineageTag: 8c595442-0d83-5e2f-9c7c-8b0f1c0dee41
+		summarizeBy: none
+		sourceColumn: Life Stage
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimAgeBand = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct ( Table.SelectColumns ( FactCampaignContact, { "Age Band" } ) ),
+				    OrderMap = [ #"Under 25" = 1, #"25-34" = 2, #"35-44" = 3, #"45-54" = 4, #"55-64" = 5, #"65+" = 6 ],
+				    Ord = Table.AddColumn ( Source, "Age Band Sort", each Record.FieldOrDefault ( OrderMap, [Age Band], 99 ), Int64.Type ),
+				    Life = Table.AddColumn ( Ord, "Life Stage", each
+				        if [Age Band] = "Under 25" then "Early career"
+				        else if [Age Band] = "65+" then "Retirement"
+				        else if [Age Band] = "55-64" then "Pre-retirement"
+				        else "Mid career", type text ),
+				    Sorted = Table.Sort ( Life, { { "Age Band Sort", Order.Ascending } } )
+				in
+				    Sorted
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,43 @@
+/// The six Bank of Uganda series in the model: policy rate, commercial lending and deposit rates, interbank rate, and two UGX/USD measures.
+table DimIndicator
+	lineageTag: e9cade58-8240-5c46-bb10-611496231ce2
+
+	/// Series name as published by the Bank of Uganda.
+	column Indicator
+		dataType: string
+		isKey
+		lineageTag: ab74a061-3827-5ac7-a19f-410b81073d11
+		summarizeBy: none
+		sourceColumn: Indicator
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Series type: Policy Rate, Lending Rate, Deposit Rate, Interbank Rate, or Exchange Rate.
+	column Category
+		dataType: string
+		lineageTag: c1eb7d17-5502-5102-8c39-e0b4a7160e4c
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Unit of measure: 'Percent per Annum' or 'UGX per USD'.
+	column Unit
+		dataType: string
+		lineageTag: ff523b58-7447-53ee-b703-dfffe264e394
+		summarizeBy: none
+		sourceColumn: Unit
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimIndicator = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct ( Table.SelectColumns ( UgandaIndicatorsRaw, { "Indicator", "Category", "Unit" } ) ),
+				    Sorted = Table.Sort ( Source, { { "Category", Order.Ascending }, { "Indicator", Order.Ascending } } )
+				in
+				    Sorted
+
+	annotation PBI_ResultType = Table
+

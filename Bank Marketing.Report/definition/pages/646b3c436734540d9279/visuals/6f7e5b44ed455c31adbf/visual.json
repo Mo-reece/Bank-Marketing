@@ -1,0 +1,112 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.4.0/schema.json",
+  "name": "6f7e5b44ed455c31adbf",
+  "position": {
+    "x": 20,
+    "y": 16,
+    "z": 0,
+    "width": 1240,
+    "height": 62,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "CAMPAIGN PERFORMANCE\n",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "9pt",
+                      "color": "#5A6B75"
+                    }
+                  },
+                  {
+                    "value": "Persistence backfires. The first call of a campaign is worth four of the eleventh.  ",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "15pt",
+                      "color": "#0F2A3F"
+                    }
+                  },
+                  {
+                    "value": "Channel, timing and contact intensity - what the campaign controlled.",
+                    "textStyle": {
+                      "fontSize": "9pt",
+                      "color": "#5A6B75",
+                      "fontStyle": "italic"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Text panel. CAMPAIGN PERFORMANCE\nPersistence backfires. The first call of a campaign is worth four of the eleventh.  Channel, timing and contact intensity - what the campaign controlled.'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

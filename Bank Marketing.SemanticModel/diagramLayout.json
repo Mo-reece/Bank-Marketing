@@ -1,0 +1,152 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1722.9423688624593,
+            "y": 205.78698792646719
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "5f66b599-af82-5328-b0f9-1b721990bd5a",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 281.82681456093405,
+            "y": 509.57397585293438
+          },
+          "nodeIndex": "DimAgeBand",
+          "nodeLineageTag": "80405d20-4061-5be9-9da0-4f4a23017e29",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 157.80043614378292
+          },
+          "nodeIndex": "DimDate",
+          "nodeLineageTag": "39204b82-175f-5cde-85a3-c23dc93572b1",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 338.64508577223643,
+            "y": -50
+          },
+          "nodeIndex": "DimEducation",
+          "nodeLineageTag": "1d14079e-f6e3-5453-bd50-b33416ea54bb",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1488.9423688624593,
+            "y": 199.80187714686917
+          },
+          "nodeIndex": "DimIndicator",
+          "nodeLineageTag": "e9cade58-8240-5c46-bb10-611496231ce2",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 636.55931884776555,
+            "y": 300.28965551496674
+          },
+          "nodeIndex": "DimJob",
+          "nodeLineageTag": "cac067b0-dda6-5956-8002-695c7ee0e52a",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 920.55931884776555,
+            "y": 193.78698792646719
+          },
+          "nodeIndex": "DimUgandaMonth",
+          "nodeLineageTag": "13e5bc42-27df-5734-9d0a-68bda84b84f8",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 349.786100424235,
+            "y": 154.4336229105013
+          },
+          "nodeIndex": "FactCampaignContact",
+          "nodeLineageTag": "27bca72b-6cba-5775-aafe-9d1d7a99b032",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1204.7608800409507,
+            "y": 232.6465751067133
+          },
+          "nodeIndex": "FactUgandaIndicator",
+          "nodeLineageTag": "818c1b25-3b7e-5775-aa46-5494292f3850",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1956.9423688624593,
+            "y": 291.78698792646719
+          },
+          "nodeIndex": "DimFunnelStage",
+          "nodeLineageTag": "c225fef3-552b-46cc-aa75-c63791e445d9",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

@@ -1,0 +1,55 @@
+/// Highest education level reached. 8 members, ordered from lowest to highest attainment.
+table DimEducation
+	lineageTag: 1d14079e-f6e3-5453-bd50-b33416ea54bb
+
+	/// Highest education level.
+	column Education
+		dataType: string
+		isKey
+		lineageTag: 0a107c4b-ee7f-5962-ae36-4742227cf792
+		summarizeBy: none
+		sourceColumn: Education
+		sortByColumn: 'Education Sort'
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Attainment order, lowest to highest; Unknown last.
+	column 'Education Sort'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7847919b-8ace-5e2b-af42-e93b303693a9
+		summarizeBy: none
+		sourceColumn: Education Sort
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Rolled up to Basic or below / Secondary / Tertiary / Unknown.
+	column 'Education Group'
+		dataType: string
+		lineageTag: 279da87d-f5ab-5375-98ae-b8cd48f81629
+		summarizeBy: none
+		sourceColumn: Education Group
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimEducation = m
+		mode: import
+		source =
+				let
+				    Source = Table.Distinct ( Table.SelectColumns ( FactCampaignContact, { "Education" } ) ),
+				    OrderMap = [ Illiterate = 1, #"Basic 4y" = 2, #"Basic 6y" = 3, #"Basic 9y" = 4,
+				                 #"High School" = 5, #"Professional Course" = 6, #"University Degree" = 7,
+				                 Unknown = 99 ],
+				    Ord = Table.AddColumn ( Source, "Education Sort", each Record.FieldOrDefault ( OrderMap, [Education], 99 ), Int64.Type ),
+				    Grp = Table.AddColumn ( Ord, "Education Group", each
+				        if Text.StartsWith ( [Education], "Basic" ) or [Education] = "Illiterate" then "Basic or below"
+				        else if [Education] = "High School" then "Secondary"
+				        else if [Education] = "Unknown" then "Unknown"
+				        else "Tertiary", type text ),
+				    Sorted = Table.Sort ( Grp, { { "Education Sort", Order.Ascending } } )
+				in
+				    Sorted
+
+	annotation PBI_ResultType = Table
+
