@@ -1,6 +1,6 @@
 # Report pages
 
-Five pages, 1280 × 720, on a shared theme
+Five pages, 1280 x 720, on a shared theme
 (`Bank Marketing.Report/StaticResources/RegisteredResources/BankMarketingTheme.json`).
 Every visual carries alt text; every page carries navigation.
 
@@ -13,16 +13,16 @@ Every visual carries alt text; every page carries navigation.
 The one-screen answer, laid out as a three-tier pyramid: headline figures, then
 what changed over time, then what to do about it.
 
-- **Left rail** — brand, page navigation, data provenance, campaign period.
-- **KPI band** — four headline figures, each with its change from the first
+- **Left rail** - brand, page navigation, data provenance, campaign period.
+- **KPI band** - four headline figures, each with its change from the first
   campaign year to the last. These use **pinned** measures, so clicking a bar or a
   table row cannot silently rewrite the headline.
-- **Contacts vs conversion by month** — the strategy shift as it happened.
-- **Targeting funnel** — cumulative targeting rules, 11.3% → 66.9%.
-- **Where deposits came from** — share of deposits by occupation. Deliberately
+- **Contacts vs conversion by month** - the strategy shift as it happened.
+- **Targeting funnel** - cumulative targeting rules, 11.3% -> 66.9%.
+- **Where deposits came from** - share of deposits by occupation. Deliberately
   *share*, not rate: rates do not sum to a whole, so a donut of rates would be
   meaningless. It also surfaces the split between best rate and biggest source.
-- **Year by year** and **What to do next** — the numbers, then the actions.
+- **Year by year** and **What to do next** - the numbers, then the actions.
 
 ## 2. Campaign Performance
 
@@ -31,7 +31,7 @@ what changed over time, then what to do about it.
 What the campaign actually controlled: channel, timing and contact intensity.
 
 - Channel: mobile 14.7% against landline 5.2%.
-- Weekday of contact: a narrow 2pp spread — timing barely matters.
+- Weekday of contact: a narrow 2pp spread - timing barely matters.
 - Prior campaign outcome: the strongest single predictor, 65.1% after a prior success.
 - Contact intensity: conversion decays monotonically with the number of calls.
 - Month-by-month table with contacts, conversion and average call length.
@@ -42,9 +42,9 @@ What the campaign actually controlled: channel, timing and contact intensity.
 
 Who converts, and who actually pays the bills.
 
-- By occupation, education and age band — conversion is **U-shaped by age**,
+- By occupation, education and age band - conversion is **U-shaped by age**,
   strongest at both ends of life.
-- By personal loan status: effectively flat, which is itself a finding — loan and
+- By personal loan status: effectively flat, which is itself a finding - loan and
   credit status carry almost no signal.
 - Volume vs conversion scatter, bubble sized by deposits won: students and retirees
   sit high and left (great rate, small volume) while admin staff sit low and right
@@ -64,7 +64,7 @@ Not shown here because it is meaningless without a drill-through context.
 
 ![Uganda Banking Sector](../screenshots/uganda-banking-sector.png)
 
-Macro context, on its own disconnected calendar — unrelated to the Portuguese
+Macro context, on its own disconnected calendar - unrelated to the Portuguese
 campaign, and the page says so.
 
 - Latest policy rate, commercial lending rate, lending spread and exchange rate.
@@ -79,7 +79,7 @@ the policy rate, so the "latest" cards can legitimately sit in different months.
 
 ## Conventions
 
-- **Insight titles.** Every visual title states the finding, not the topic —
+- **Insight titles.** Every visual title states the finding, not the topic -
   "Channel: mobile converts nearly 3x landline", not "Conversion by channel".
 - **Data-visual budget.** No page exceeds 8 query-generating visuals. Textboxes and
   navigation are chrome and cost no query; `tools/validate_pbip.py` counts them
