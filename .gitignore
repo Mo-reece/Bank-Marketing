@@ -10,3 +10,6 @@ desktop.ini
 **/.DS_Store
 **/__MACOSX/
 **/.Rhistory
+
+# local README preview, not part of the repo
+readme-preview.html
