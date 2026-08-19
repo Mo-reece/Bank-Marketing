@@ -78,16 +78,58 @@ February of 2009 and 2010.
 
 ---
 
+## The report
+
+Five pages. Full detail in [`docs/report-pages.md`](docs/report-pages.md).
+
+### Executive Overview
+
+The one-screen answer — headline figures with their change since 2008, the monthly
+trend, the targeting funnel, and three concrete actions. *Shown at the top of this
+page.*
+
+### Campaign Performance
+
+What the campaign controlled: channel, weekday, prior outcome and contact intensity.
+
+![Campaign Performance](screenshots/campaign-performance.png)
+
+### Customer Segments
+
+Who converts and who pays the bills — occupation, education, age, and a volume vs
+rate scatter. Right-click any bar to drill through to **Segment Detail** (a hidden
+drill-through page, not pictured because it is meaningless unfiltered).
+
+![Customer Segments](screenshots/customer-segments.png)
+
+### Uganda Banking Sector
+
+Macro context on its own disconnected calendar, deliberately unrelated to the
+Portuguese campaign.
+
+![Uganda Banking Sector](screenshots/uganda-banking-sector.png)
+
+---
+
 ## Repo layout
 
 ```
-Bank Marketing.pbip                    project entry point
+Bank Marketing.pbip                    project entry point - open this
 Bank Marketing.SemanticModel/          TMDL: tables, measures, relationships, M queries
 Bank Marketing.Report/                 PBIR: pages, visuals, theme
-data/                                  source CSVs + the UCI data dictionary
-docs/measures.md                       generated reference for all 46 measures
-tools/validate_pbip.py                 offline validator, run it after any edit
-screenshots/
+data/
+  bank-additional-full.csv             UCI Bank Marketing, 41,188 rows
+  bank-additional-names.txt            UCI's own column documentation
+  BOU_Uganda_Monthly.csv               Bank of Uganda monthly rates, 1,474 rows
+  README.md                            provenance, quirks and sentinels
+docs/
+  report-pages.md                      every page, what it answers, screenshots
+  semantic-model.md                    tables, columns, relationships
+  measures.md                          all 46 measures, generated from the TMDL
+  findings.md                          the analysis, with every figure verified
+screenshots/                           one PNG per visible page
+tools/
+  validate_pbip.py                     offline validator - run after any edit
 ```
 
 ---
@@ -162,7 +204,7 @@ joined to `DimUgandaMonth` and `DimIndicator`.
 the stages are cumulative filters rather than a column in the data.
 
 **`_Measures`** holds every measure. Folders are numbered so they sort in reading
-order — see [`docs/measures.md`](docs/measures.md).
+order — see [`docs/measures.md`](docs/measures.md) and [`docs/semantic-model.md`](docs/semantic-model.md).
 
 Two conventions worth knowing before editing:
 
