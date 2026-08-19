@@ -1,0 +1,308 @@
+<!doctype html><meta charset="utf-8">
+<title>README preview</title>
+<style>
+ body{max-width:900px;margin:2rem auto;padding:0 1rem;
+      font:16px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#1f2328}
+ img{max-width:100%;border:1px solid #d0d7de;border-radius:6px;margin:.5rem 0}
+ table{border-collapse:collapse;margin:1rem 0}
+ th,td{border:1px solid #d0d7de;padding:6px 13px}
+ th{background:#f6f8fa}
+ code{background:#eff1f3;padding:.2em .4em;border-radius:6px;font-size:85%}
+ pre{background:#f6f8fa;padding:16px;border-radius:6px;overflow:auto}
+ pre code{background:none;padding:0}
+ h1,h2{border-bottom:1px solid #d0d7de;padding-bottom:.3em}
+ blockquote{border-left:.25em solid #d0d7de;padding:0 1em;color:#59636e;margin-left:0}
+</style>
+<h1>Bank Marketing — Power BI</h1>
+<p>A Power BI project built on the UCI Bank Marketing dataset: 41,188 telemarketing
+contacts made by a Portuguese bank between May 2008 and November 2010, selling
+term deposits. A second, unrelated dataset covering Bank of Uganda monthly rates
+gives the campaign some macro context.</p>
+<p><img alt="Executive Overview" src="screenshots/executive-overview.png" /></p>
+<p>The whole project is in <strong>PBIP</strong> format — the semantic model as TMDL and the report
+as PBIR JSON — so every measure, relationship and visual is plain text, reviewable
+in a pull request and diffable line by line. Nothing here is locked inside a <code>.pbix</code>.</p>
+<hr />
+<h2>The finding</h2>
+<p><strong>The bank stopped mass-dialling and started targeting.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>2008</th>
+<th>2009</th>
+<th>2010</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clients contacted</td>
+<td>27,690</td>
+<td>11,440</td>
+<td>2,058</td>
+</tr>
+<tr>
+<td>Deposits opened</td>
+<td>1,339</td>
+<td>2,228</td>
+<td>1,073</td>
+</tr>
+<tr>
+<td>Conversion rate</td>
+<td>4.84%</td>
+<td>19.48%</td>
+<td>52.14%</td>
+</tr>
+</tbody>
+</table>
+<p>Contact volume fell <strong>92.6%</strong> while deposits fell only <strong>19.9%</strong>. Conversion rose
+<strong>10.8×</strong>. Cutting 93% of the calls cost only 20% of the deposits.</p>
+<p>The targeting funnel shows where the lift came from. Each stage is a strict subset
+of the one above it, so the bars can honestly be read as a funnel:</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Clients</th>
+<th>Conversion</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All contacted</td>
+<td>41,188</td>
+<td>11.3%</td>
+</tr>
+<tr>
+<td>On mobile</td>
+<td>26,144</td>
+<td>14.7%</td>
+</tr>
+<tr>
+<td>…within first 3 calls</td>
+<td>21,740</td>
+<td>15.8%</td>
+</tr>
+<tr>
+<td>…no prior refusal</td>
+<td>18,246</td>
+<td>16.0%</td>
+</tr>
+<tr>
+<td>…prior subscriber</td>
+<td>1,175</td>
+<td><strong>66.9%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Three levers, in order of strength:</p>
+<ol>
+<li><strong>Prior subscribers convert at 66.9%</strong> against an 11.3% baseline — by far the
+   strongest signal in the data.</li>
+<li><strong>Conversion falls monotonically with contact intensity</strong> — 13.0% on the first
+   call of a campaign, 9.4% by the fourth, 3.1% from the eleventh on. Repeated
+   calling does not wear prospects down, it burns them.</li>
+<li><strong>Mobile converts at 14.7% against 5.2% on landline.</strong></li>
+</ol>
+<p>One honest caveat, stated on the report itself: call duration predicts the outcome
+strongly but is only known <em>after</em> the call, so it cannot be used to target.</p>
+<hr />
+<h2>The interesting problem: the source file has no year</h2>
+<p><code>bank-additional-full.csv</code> records a <code>month</code> (<code>may</code>, <code>jun</code>, …) and a <code>day_of_week</code>,
+but <strong>no year and no day of month</strong>. The UCI documentation says the rows are ordered
+by contact date, spanning May 2008 to November 2010 — but the year is nowhere in the
+data.</p>
+<p>The recovery, implemented in the <code>CampaignPeriods</code> query:</p>
+<ol>
+<li><code>cons.price.idx</code> is a monthly national index. Across this file it turns out to be
+   a <strong>1:1 natural key for the campaign month</strong> — 26 distinct values, no value shared
+   by two months, no month carrying two values.</li>
+<li>Grouping on <code>[month, cons.price.idx]</code> therefore recovers exactly the 26 campaign
+   periods.</li>
+<li>Walking those periods <strong>in source-row order</strong> assigns the year: the month number
+   rises within a year and drops when a new year begins.</li>
+</ol>
+<p>This reproduces May 2008 → November 2010 exactly, with 7 months in 2008, 10 in 2009
+and 9 in 2010. The gaps are real: no contacts in September 2008, nor in January or
+February of 2009 and 2010.</p>
+<blockquote>
+<p><strong>Load-order warning.</strong> Source order is the <em>only</em> evidence of the year. Never
+re-sort <code>CampaignContactsRaw</code> before its index column is added, or the years
+silently become wrong.</p>
+</blockquote>
+<hr />
+<h2>The report</h2>
+<p>Five pages. Full detail in <a href="docs/report-pages.md"><code>docs/report-pages.md</code></a>.</p>
+<h3>Executive Overview</h3>
+<p>The one-screen answer — headline figures with their change since 2008, the monthly
+trend, the targeting funnel, and three concrete actions. <em>Shown at the top of this
+page.</em></p>
+<h3>Campaign Performance</h3>
+<p>What the campaign controlled: channel, weekday, prior outcome and contact intensity.</p>
+<p><img alt="Campaign Performance" src="screenshots/campaign-performance.png" /></p>
+<h3>Customer Segments</h3>
+<p>Who converts and who pays the bills — occupation, education, age, and a volume vs
+rate scatter. Right-click any bar to drill through to <strong>Segment Detail</strong> (a hidden
+drill-through page, not pictured because it is meaningless unfiltered).</p>
+<p><img alt="Customer Segments" src="screenshots/customer-segments.png" /></p>
+<h3>Uganda Banking Sector</h3>
+<p>Macro context on its own disconnected calendar, deliberately unrelated to the
+Portuguese campaign.</p>
+<p><img alt="Uganda Banking Sector" src="screenshots/uganda-banking-sector.png" /></p>
+<hr />
+<h2>Repo layout</h2>
+<pre><code>Bank Marketing.pbip                    project entry point - open this
+Bank Marketing.SemanticModel/          TMDL: tables, measures, relationships, M queries
+Bank Marketing.Report/                 PBIR: pages, visuals, theme
+data/
+  bank-additional-full.csv             UCI Bank Marketing, 41,188 rows
+  bank-additional-names.txt            UCI's own column documentation
+  BOU_Uganda_Monthly.csv               Bank of Uganda monthly rates, 1,474 rows
+  README.md                            provenance, quirks and sentinels
+docs/
+  report-pages.md                      every page, what it answers, screenshots
+  semantic-model.md                    tables, columns, relationships
+  measures.md                          all 46 measures, generated from the TMDL
+  findings.md                          the analysis, with every figure verified
+screenshots/                           one PNG per visible page
+tools/
+  validate_pbip.py                     offline validator - run after any edit
+</code></pre>
+<hr />
+<h2>Getting started</h2>
+<p>Requires <strong>Power BI Desktop</strong> (November 2025 or later — the report uses the modern
+card visual, which went GA in that release).</p>
+<ol>
+<li>Clone the repo.</li>
+<li>Open <code>Bank Marketing.pbip</code>.</li>
+<li><strong>Set the data path.</strong> The model reads its CSVs through a Power Query parameter
+   called <code>DataFolder</code>, which is checked in pointing at the author's machine. Change
+   it to wherever you cloned the repo:</li>
+</ol>
+<p><em>Home → Transform data → Manage parameters → <code>DataFolder</code></em> → set to the repo root,
+   e.g. <code>C:\code\bank-marketing-powerbi</code>. Then <strong>Refresh</strong>.</p>
+<p>Every query builds its path from that one value, so this is the only thing you
+   need to change.</p>
+<p>Alternatively, edit <code>DataFolder</code> directly in
+<code>Bank Marketing.SemanticModel/definition/expressions.tmdl</code> before opening.</p>
+<hr />
+<h2>Data</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Rows</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data/bank-additional-full.csv</code></td>
+<td>41,188</td>
+<td>UCI Machine Learning Repository</td>
+</tr>
+<tr>
+<td><code>data/bank-additional-names.txt</code></td>
+<td>—</td>
+<td>UCI's own column documentation</td>
+</tr>
+<tr>
+<td><code>data/BOU_Uganda_Monthly.csv</code></td>
+<td>1,474</td>
+<td>Bank of Uganda open data portal</td>
+</tr>
+</tbody>
+</table>
+<p><strong>UCI Bank Marketing.</strong> Moro, S., Rita, P. and Cortez, P. (2014). <em>Bank Marketing</em>
+[Dataset]. UCI Machine Learning Repository. <a href="https://doi.org/10.24432/C5K306">https://doi.org/10.24432/C5K306</a>.
+Licensed <strong>CC BY 4.0</strong>. The file here is <code>bank-additional-full.csv</code> — semicolon
+delimited, every text value quoted.</p>
+<p><strong>Bank of Uganda.</strong> Monthly interest and exchange rates pulled from the Knoema-hosted
+open data portal at <code>cb-uganda.opendataforafrica.org</code> (no authentication required;
+send a browser User-Agent). Six series: Central Bank Rate, commercial lending and
+deposit rates, the overall interbank rate, and UGX/USD period-average and period-end.</p>
+<p>Two honest notes about the Uganda data, both surfaced on the report:</p>
+<ul>
+<li><strong>The CBR series starts in July 2011</strong>, because that is when Uganda adopted the
+  Central Bank Rate under inflation targeting. Earlier months are genuinely absent,
+  not missing.</li>
+<li><strong>Lending and deposit rates publish one month behind</strong> the CBR and the exchange
+  rate, which is why the "latest value" measures each find their own series' last
+  observation rather than assuming a common one.</li>
+</ul>
+<p>The campaign data (Portugal, 2008–2010) and the Uganda data (2005–2026) are
+deliberately <strong>not</strong> related to each other. They sit on two disconnected date tables,
+because forcing them onto one calendar would leave both mostly empty. Each table's
+description says so.</p>
+<hr />
+<h2>The model</h2>
+<p>9 tables, 46 measures, 6 relationships — all many-to-one, single-direction.</p>
+<p><strong>Campaign star.</strong> <code>FactCampaignContact</code> (41,188 rows, one per client contacted)
+joined to <code>DimDate</code>, <code>DimJob</code>, <code>DimEducation</code>, <code>DimAgeBand</code>.</p>
+<p><strong>Uganda star.</strong> <code>FactUgandaIndicator</code> (1,474 rows, one per indicator per month)
+joined to <code>DimUgandaMonth</code> and <code>DimIndicator</code>.</p>
+<p><strong>Disconnected.</strong> <code>DimFunnelStage</code> drives the targeting funnel via <code>SWITCH</code>, since
+the stages are cumulative filters rather than a column in the data.</p>
+<p><strong><code>_Measures</code></strong> holds every measure. Folders are numbered so they sort in reading
+order — see <a href="docs/measures.md"><code>docs/measures.md</code></a> and <a href="docs/semantic-model.md"><code>docs/semantic-model.md</code></a>.</p>
+<p>Two conventions worth knowing before editing:</p>
+<ul>
+<li><strong>Pinned headline measures.</strong> The four Executive Overview KPIs use
+  <code>CALCULATE(..., REMOVEFILTERS())</code> so clicking a bar or a table row cannot silently
+  rewrite the headline. Charts stay fully cross-filterable; only the headline is
+  pinned. Use <code>Total Contacts</code> (responsive) rather than <code>Clients Contacted</code> (pinned)
+  anywhere a figure <em>should</em> follow the filters.</li>
+<li><strong>Deliberate blanks.</strong> Measures return <code>BLANK()</code> rather than a misleading number at
+  the edges — a spread is blank in months where either leg has not published, the
+  first-to-last-year deltas are blank when only one year is in view, and the mm:ss
+  duration is blank for months with no calls so empty rows drop out of tables.</li>
+</ul>
+<hr />
+<h2>Validation</h2>
+<pre><code class="language-bash">python tools/validate_pbip.py
+</code></pre>
+<p>Exit 0 means clean. It runs offline — no Power BI needed — and checks that:</p>
+<ul>
+<li>every visual field binding resolves to a real table, column or measure</li>
+<li>every relationship endpoint exists</li>
+<li>every measure has a description, a display folder and a format string (text and
+  image-URI measures are exempt, by name, so a rename fails loudly)</li>
+<li>fact tables document their grain, the date table is marked, auto date/time is off</li>
+<li><strong>TMDL block indentation is legal</strong> — a multi-line body must be indented deeper
+  than its own property lines, or the parser folds <code>lineageTag</code> into the code and
+  Power BI refuses the file</li>
+<li>the report theme declares <code>reportVersionAtImport</code></li>
+<li>no page exceeds 8 <em>data</em> visuals, every visual has alt text, every page has
+  navigation</li>
+</ul>
+<p>Run it after any edit, and always after a rename.</p>
+<hr />
+<h2>Notes for anyone hand-editing PBIP</h2>
+<p>Things that cost real time here, recorded so they cost you less:</p>
+<ul>
+<li><strong><code>//</code> comments are rejected in <code>relationships.tmdl</code></strong> at any position or
+  indentation. Put the note on the column instead.</li>
+<li><strong>A multi-line TMDL body must be indented deeper than its property lines.</strong> Power BI
+  writes expression bodies at two tabs with properties at one, and partition <code>source =</code>
+  bodies at four tabs with properties at three. Match that.</li>
+<li><strong>Loading a model successfully does not mean it is valid.</strong> An offline TMDL load will
+  happily accept a file whose M is broken; it does not validate M at all. Desktop is
+  the real check.</li>
+<li><strong>Unknown <code>queryState</code> roles and unknown format properties are silently ignored</strong> —
+  a wrong name never announces itself, the visual just renders without that binding.</li>
+<li><strong>The card visual auto-scales its text</strong> to the container and ignores the <code>fontSize</code>
+  in the JSON. Size cards by geometry, not font size.</li>
+<li><strong>Buttons ignore <code>text</code> and <code>outline</code> from PBIR</strong> (only <code>fill</code> applies), so the
+  navigation captions here are drawn by textboxes with a transparent button on top as
+  the click target.</li>
+<li><strong>Desktop rewrites the whole project on save</strong> and will overwrite on-disk edits made
+  while it holds the file open. Either close it first, or edit the live model through
+  the modeling API and export back.</li>
+</ul>
+<hr />
+<h2>Licence</h2>
+<p>Code and report definitions: <a href="LICENSE">MIT</a>.</p>
+<p>The UCI Bank Marketing dataset is © its authors under CC BY 4.0 and is redistributed
+here under that licence with the citation above. Bank of Uganda figures are public
+data from the Bank of Uganda open data portal. This project is a portfolio exercise
+and is not affiliated with, endorsed by, or a product of any bank.</p>
